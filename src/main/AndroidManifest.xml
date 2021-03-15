@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.github.pires.obd.reader"
     android:versionCode="13"
     android:versionName="2.0-RC2">
@@ -13,7 +14,9 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
-    <uses-permission android:name="android.permission.READ_LOGS" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.READ_LOGS"
+        tools:ignore="ProtectedPermissions" />
 
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -45,6 +48,10 @@
             android:name="com.github.pires.obd.reader.activity.TripListActivity"
             android:label="@string/title_activity_trips_list"></activity>
 
+        <activity
+            android:name="com.github.pires.obd.reader.cam.CameraActivity"
+            android:label="@string/menu_start_cam"></activity>
+        
         <service
             android:name="com.github.pires.obd.reader.io.ObdGatewayService"
             android:exported="false" />

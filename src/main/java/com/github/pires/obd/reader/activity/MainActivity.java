@@ -42,6 +42,7 @@ import com.github.pires.obd.commands.engine.RPMCommand;
 import com.github.pires.obd.commands.engine.RuntimeCommand;
 import com.github.pires.obd.enums.AvailableCommandNames;
 import com.github.pires.obd.reader.R;
+import com.github.pires.obd.reader.cam.CameraActivity;
 import com.github.pires.obd.reader.config.ObdConfig;
 import com.github.pires.obd.reader.io.AbstractGatewayService;
 import com.github.pires.obd.reader.io.LogCSVWriter;
@@ -83,6 +84,7 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
     private static final int BLUETOOTH_DISABLED = 1;
     private static final int START_LIVE_DATA = 2;
     private static final int STOP_LIVE_DATA = 3;
+    private static final int START_CAM = 12;
     private static final int SETTINGS = 4;
     private static final int GET_DTC = 5;
     private static final int TABLE_ROW_MARGIN = 7;
@@ -458,6 +460,7 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
     public boolean onCreateOptionsMenu(Menu menu) {
         menu.add(0, START_LIVE_DATA, 0, getString(R.string.menu_start_live_data));
         menu.add(0, STOP_LIVE_DATA, 0, getString(R.string.menu_stop_live_data));
+        menu.add(0, START_CAM, 0, getString(R.string.menu_start_cam));
         menu.add(0, GET_DTC, 0, getString(R.string.menu_get_dtc));
         menu.add(0, TRIPS_LIST, 0, getString(R.string.menu_trip_list));
         menu.add(0, SETTINGS, 0, getString(R.string.menu_settings));
@@ -476,6 +479,9 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
                 return true;
             case STOP_LIVE_DATA:
                 stopLiveData();
+                return true;
+            case START_CAM:
+                startCam();
                 return true;
             case SETTINGS:
                 updateConfig();
@@ -497,6 +503,13 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
         startActivity(new Intent(this, TroubleCodesActivity.class));
     }
 
+    private void startCam() {
+        Log.d(TAG, "Starting camera...");
+        tl.removeAllViews();
+//        b.putString("Test", new String("Testing Bundle"));
+        startActivity(new Intent(this, CameraActivity.class));
+
+    }
     private void startLiveData() {
         Log.d(TAG, "Starting live data..");
 
