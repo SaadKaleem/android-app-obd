@@ -507,13 +507,7 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
         Log.d(TAG, "Starting camera...");
         tl.removeAllViews();
 //        b.putString("Test", new String("Testing Bundle"));
-        Intent i = new Intent(this, CameraActivity.class);
-        Bundle bundle = new Bundle();
-        bundle.putString("obdStatus", obdStatusTextView.toString());
-        bundle.putString("btStatus", btStatusTextView.toString());
-        bundle.putString("gpsStatus", gpsStatusTextView.toString());
-        i.putExtras(bundle);
-        startActivity(i);
+        startActivity(new Intent(this, CameraActivity.class));
 
     }
     private void startLiveData() {
