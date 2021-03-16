@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.github.pires.obd.reader.R;
 
@@ -20,6 +21,8 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import roboguice.inject.InjectView;
 
 public class CameraActivity extends Activity {
 
@@ -37,10 +40,20 @@ public class CameraActivity extends Activity {
     public static ImageButton indicatorButton;
 
     private boolean isRecording = false;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.cam);
+        Bundle bundle = getIntent().getExtras();
+        TextView obdStatus = (TextView)findViewById(R.id.OBD_STATUS);
+        TextView btStatus = (TextView)findViewById(R.id.BT_STATUS);
+        TextView gpsStatus = (TextView)findViewById(R.id.GPS_POS);
+        Log.d("TextView", String.valueOf(obdStatus));
+        Log.d("BundleTExt", bundle.getString("obdStatus"));
+        obdStatus.setText(bundle.getString("obdStatus"));
+        btStatus.setText(bundle.getString("btStatus"));
+        gpsStatus.setText(bundle.getString("gpsStatus"));
 
 
         // Create an instance of Camera
@@ -53,6 +66,9 @@ public class CameraActivity extends Activity {
 
         captureButton = (Button) findViewById(R.id.button_capture);
         indicatorButton = (ImageButton) findViewById(R.id.indicator_btn);
+
+
+
 
         captureButton.setOnClickListener(
                 new View.OnClickListener() {
@@ -206,5 +222,10 @@ public class CameraActivity extends Activity {
             mCamera.release();        // release the camera for other applications
             mCamera = null;
         }
+    }
+
+    public void onStop() {
+        super.onStop();
+
     }
 }
