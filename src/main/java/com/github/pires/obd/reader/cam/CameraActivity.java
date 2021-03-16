@@ -12,6 +12,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 
 import com.github.pires.obd.reader.R;
 
@@ -33,10 +34,14 @@ public class CameraActivity extends Activity {
     public static final int MEDIA_TYPE_VIDEO = 2;
 
     public static Button captureButton;
+    public static ImageButton indicatorButton;
+
+    private boolean isRecording = false;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.cam);
+
 
         // Create an instance of Camera
         mCamera = getCameraInstance();
@@ -47,6 +52,7 @@ public class CameraActivity extends Activity {
         preview.addView(mPreview);
 
         captureButton = (Button) findViewById(R.id.button_capture);
+        indicatorButton = (ImageButton) findViewById(R.id.indicator_btn);
 
         captureButton.setOnClickListener(
                 new View.OnClickListener() {
@@ -59,6 +65,7 @@ public class CameraActivity extends Activity {
                             mCamera.lock();         // take camera access back from MediaRecorder
 
                             // inform the user that recording has stopped
+                            indicatorButton.setBackgroundColor(0x008000);
                             captureButton.setText("Capture");
                             isRecording = false;
                         } else {
@@ -67,7 +74,7 @@ public class CameraActivity extends Activity {
                                 // Camera is available and unlocked, MediaRecorder is prepared,
                                 // now you can start recording
                                 mediaRecorder.start();
-
+                                indicatorButton.setBackgroundColor(0xFF0000);
                                 // inform the user that recording has started
                                 captureButton.setText("Stop");
                                 isRecording = true;
@@ -88,6 +95,7 @@ public class CameraActivity extends Activity {
         Camera c = null;
         try {
             c = Camera.open(); // attempt to get a Camera instance
+            c.setDisplayOrientation(90);
         }
         catch (Exception e){
             // Camera is not available (in use or does not exist)
@@ -96,7 +104,6 @@ public class CameraActivity extends Activity {
         return c; // returns null if camera is unavailable
     }
 
-    private boolean isRecording = false;
 
     // Add a listener to the Capture button
 
@@ -114,7 +121,7 @@ public class CameraActivity extends Activity {
         mediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
 
         // Step 3: Set a CamcorderProfile (requires API Level 8 or higher)
-        mediaRecorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH));
+        mediaRecorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_LOW));
 
         // Step 4: Set output file
         mediaRecorder.setOutputFile(getOutputMediaFile(MEDIA_TYPE_VIDEO).toString());
@@ -124,6 +131,7 @@ public class CameraActivity extends Activity {
 
         // Step 6: Prepare configured MediaRecorder
         try {
+            mediaRecorder.setOrientationHint(90);
             mediaRecorder.prepare();
         } catch (IllegalStateException e) {
             Log.d(TAG, "IllegalStateException preparing MediaRecorder: " + e.getMessage());
