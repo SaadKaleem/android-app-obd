@@ -18,8 +18,6 @@ import java.util.List;
 
 import roboguice.activity.RoboActivity;
 
-import static com.github.pires.obd.reader.activity.ConfirmDialog.createDialog;
-
 /**
  * Some code taken from https://github.com/wdkapps/FillUp
  */
@@ -119,7 +117,7 @@ public class TripListActivity
     }
 
     protected Dialog onCreateDialog(int id) {
-        return createDialog(id, this, this);
+        return ConfirmDialog.createDialog(id, this, this);
     }
 
     /**

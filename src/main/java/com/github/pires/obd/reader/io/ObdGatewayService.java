@@ -26,15 +26,11 @@ import com.github.pires.obd.exceptions.UnsupportedCommandException;
 import com.github.pires.obd.reader.R;
 import com.github.pires.obd.reader.activity.ConfigActivity;
 import com.github.pires.obd.reader.activity.MainActivity;
-import com.github.pires.obd.reader.io.BluetoothManager;
-import com.github.pires.obd.reader.io.ObdCommandJob.ObdCommandJobState;
 import com.google.inject.Inject;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.UUID;
 
 /**
  * This service is primarily responsible for establishing and maintaining a
@@ -193,9 +189,9 @@ public class ObdGatewayService extends AbstractGatewayService {
                 // log job
                 Log.d(TAG, "Taking job[" + job.getId() + "] from queue..");
 
-                if (job.getState().equals(ObdCommandJobState.NEW)) {
+                if (job.getState().equals(ObdCommandJob.ObdCommandJobState.NEW)) {
                     Log.d(TAG, "Job state is NEW. Run it..");
-                    job.setState(ObdCommandJobState.RUNNING);
+                    job.setState(ObdCommandJob.ObdCommandJobState.RUNNING);
                     job.getCommand().run(sock.getInputStream(), sock.getOutputStream());
                 } else
                     // log not new job
@@ -205,12 +201,12 @@ public class ObdGatewayService extends AbstractGatewayService {
                 Thread.currentThread().interrupt();
             } catch (UnsupportedCommandException u) {
                 if (job != null) {
-                    job.setState(ObdCommandJobState.NOT_SUPPORTED);
+                    job.setState(ObdCommandJob.ObdCommandJobState.NOT_SUPPORTED);
                 }
                 Log.d(TAG, "Command not supported. -> " + u.getMessage());
             } catch (Exception e) {
                 if (job != null) {
-                    job.setState(ObdCommandJobState.EXECUTION_ERROR);
+                    job.setState(ObdCommandJob.ObdCommandJobState.EXECUTION_ERROR);
                 }
                 Log.e(TAG, "Failed to run command. -> " + e.getMessage());
             }

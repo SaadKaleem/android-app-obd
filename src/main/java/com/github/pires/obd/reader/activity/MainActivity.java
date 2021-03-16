@@ -71,9 +71,6 @@ import roboguice.activity.RoboActivity;
 import roboguice.inject.ContentView;
 import roboguice.inject.InjectView;
 
-import static com.github.pires.obd.reader.activity.ConfigActivity.getGpsDistanceUpdatePeriod;
-import static com.github.pires.obd.reader.activity.ConfigActivity.getGpsUpdatePeriod;
-
 // Some code taken from https://github.com/barbeau/gpstest
 
 @ContentView(R.layout.main)
@@ -723,7 +720,7 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
 
     private synchronized void gpsStart() {
         if (!mGpsIsStarted && mLocProvider != null && mLocService != null && mLocService.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            mLocService.requestLocationUpdates(mLocProvider.getName(), getGpsUpdatePeriod(prefs), getGpsDistanceUpdatePeriod(prefs), this);
+            mLocService.requestLocationUpdates(mLocProvider.getName(), ConfigActivity.getGpsUpdatePeriod(prefs), ConfigActivity.getGpsDistanceUpdatePeriod(prefs), this);
             mGpsIsStarted = true;
         } else if (mGpsIsStarted && mLocProvider != null && mLocService != null) {
         } else {
