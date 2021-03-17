@@ -27,6 +27,7 @@ public class CameraActivity extends Activity {
     private CameraPreview mPreview;
     private SurfaceView preview;
     private MediaRecorder mediaRecorder;
+    public String outputFile;
 
     public static final String TAG = "CAM-TAG";
 
@@ -61,6 +62,7 @@ public class CameraActivity extends Activity {
                         if (isRecording) {
                             // stop recording and release camera
                             mediaRecorder.stop();  // stop the recording
+                            Log.d(TAG, outputFile + " -2");
                             releaseMediaRecorder(); // release the MediaRecorder object
                             mCamera.lock();         // take camera access back from MediaRecorder
 
@@ -124,7 +126,9 @@ public class CameraActivity extends Activity {
         mediaRecorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_LOW));
 
         // Step 4: Set output file
-        mediaRecorder.setOutputFile(getOutputMediaFile(MEDIA_TYPE_VIDEO).toString());
+        outputFile = getOutputMediaFile(MEDIA_TYPE_VIDEO).toString();
+        Log.d(TAG, outputFile + " -1");
+        mediaRecorder.setOutputFile(outputFile);
 
         // Step 5: Set the preview output
         mediaRecorder.setPreviewDisplay(mPreview.getHolder().getSurface());
