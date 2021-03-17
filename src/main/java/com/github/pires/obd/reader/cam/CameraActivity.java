@@ -15,6 +15,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 
 import com.github.pires.obd.reader.R;
+import com.pedro.rtplibrary.rtsp.RtspCamera1;
 
 import java.io.File;
 import java.io.IOException;

@@ -43,6 +43,7 @@ import com.github.pires.obd.commands.engine.RuntimeCommand;
 import com.github.pires.obd.enums.AvailableCommandNames;
 import com.github.pires.obd.reader.R;
 import com.github.pires.obd.reader.cam.CameraActivity;
+import com.github.pires.obd.reader.cam.ExampleRtspActivity;
 import com.github.pires.obd.reader.config.ObdConfig;
 import com.github.pires.obd.reader.io.AbstractGatewayService;
 import com.github.pires.obd.reader.io.LogCSVWriter;
@@ -504,7 +505,7 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
         Log.d(TAG, "Starting camera...");
         tl.removeAllViews();
 //        b.putString("Test", new String("Testing Bundle"));
-        startActivity(new Intent(this, CameraActivity.class));
+        startActivity(new Intent(this, ExampleRtspActivity.class));
 
     }
     private void startLiveData() {

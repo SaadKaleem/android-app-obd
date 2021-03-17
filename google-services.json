@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "174600909069",
+    "project_id": "fleetmanagement-cfe88",
+    "storage_bucket": "fleetmanagement-cfe88.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:174600909069:android:017967aa79b55075bcc044",
+        "android_client_info": {
+          "package_name": "com.github.pires.obd.reader"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "174600909069-8u9lp79dcqce2kr5ie8ngg1624bovs9l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZZSElxFDv7Mg1954aSmbp6z1QTxUP69g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "174600909069-8u9lp79dcqce2kr5ie8ngg1624bovs9l.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
