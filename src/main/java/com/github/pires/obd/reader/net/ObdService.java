@@ -13,16 +13,22 @@
 
 package com.github.pires.obd.reader.net;
 
-import retrofit.client.Response;
-import retrofit.http.Body;
-import retrofit.http.POST;
+import retrofit2.Call;
+import retrofit2.Response;
+import retrofit2.http.Body;
+import retrofit2.http.Headers;
+import retrofit2.http.POST;
 
 /**
  * Definition of REST service available in OBD Server.
  */
 public interface ObdService {
 
-    @POST("/")
-    Response uploadReading(@Body ObdReading reading);
+    @Headers({
+            "Content-type: application/json",
+            "Connection: close"
+    })
+    @POST(".")
+    Call<String> uploadReading(@Body String reading);
 
 }

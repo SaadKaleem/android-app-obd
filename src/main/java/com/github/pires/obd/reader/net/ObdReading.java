@@ -33,6 +33,9 @@ public class ObdReading {
     private Map<String, String> readings;
 //    private accData
 
+    private static final String[] NAMES_COLUMNS_ONLY_READINGS = {
+            "engine_load", "engine_rpm", "speed", "throttle_pos",};
+
     public ObdReading() {
         readings = new HashMap<>();
     }
@@ -44,7 +47,12 @@ public class ObdReading {
         this.altitude = altitude;
         this.timestamp = timestamp;
         this.vehicleid = vehicleid;
-        this.readings = readings;
+        Map<String, String> temp = new HashMap<String, String>();
+
+        for (String ccln : NAMES_COLUMNS_ONLY_READINGS) {
+            temp.put(ccln, readings.get(ccln));
+        }
+        this.readings = temp;
         this.accX = acc[0];
         this.accY = acc[1];
         this.accZ = acc[2];
@@ -131,19 +139,20 @@ public class ObdReading {
     }
 
     public String toString() {
-        return " ";
-//        return "lat:" + latitude + "," +
-//                "long:" + longitude + "," +
-//                "alt:" + altitude + "," +
-//                "accX:" + accX + "," +
-//                "accY:" + accY + "," +
-//                "accZ:" + accZ + "," +
-//                "gyroX:" + gyroX + "," +
-//                "gyroY:" + gyroY + "," +
-//                "gyroZ:" + gyroZ + "," +
-//                "orientation:" + orientation + "," +
-//                "vehicleid:" + vehicleid + "," +
-//                "readings:" + readings.toString().substring(10).replace("}", "").replace(",", ",");
+        return "{" +
+                "time:" + timestamp + "," +
+                "lat:" + latitude + "," +
+                "long:" + longitude + "," +
+                "alt:" + altitude + "," +
+                "accX:" + accX + "," +
+                "accY:" + accY + "," +
+                "accZ:" + accZ + "," +
+                "gyroX:" + gyroX + "," +
+                "gyroY:" + gyroY + "," +
+                "gyroZ:" + gyroZ + "," +
+                "orientation:" + orientation + "," +
+                "readings:" + readings.toString() +
+                 "}";
     }
-
+//               "readings:" + readings.toString().substring(10).replace("}", "").replace(",", ",") +
 }

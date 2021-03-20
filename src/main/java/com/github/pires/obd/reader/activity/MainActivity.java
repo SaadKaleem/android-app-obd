@@ -57,16 +57,26 @@ import com.github.pires.obd.reader.trips.TripLog;
 import com.github.pires.obd.reader.trips.TripRecord;
 import com.google.inject.Inject;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 
-import retrofit.RestAdapter;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Retrofit;
+import retrofit2.Response;
+import retrofit2.converter.gson.GsonConverterFactory;
 import roboguice.RoboGuice;
 import roboguice.activity.RoboActivity;
 import roboguice.inject.ContentView;
@@ -91,6 +101,7 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
     private static final int TRIPS_LIST = 10;
     private static final int SAVE_TRIP_NOT_AVAILABLE = 11;
     private static boolean bluetoothDefaultIsEnable = false;
+    private static final int EVENT_INTERVAL = 3;
 
     static {
         RoboGuice.setUseAnnotationDatabases(false);
@@ -104,6 +115,8 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
     private Location mLastLocation;
     private float[] accData = new float[3];
     private float[] gyroData = new float[3];
+    private Queue<ObdReading> readingEventQueue = new LinkedList<>();
+
 
     private float orientation;
     /// the trip log
@@ -195,7 +208,7 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
     private AbstractGatewayService service;
     private final Runnable mQueueCommands = new Runnable() {
         public void run() {
-            if (service != null && service.isRunning() && service.queueEmpty()) {
+//            if (service != null && service.isRunning() && service.queueEmpty()) {
                 queueCommands();
 
                 double lat = 0;
@@ -220,10 +233,19 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
                     // Upload the current reading by http
                     final String vin = prefs.getString(ConfigActivity.VEHICLE_ID_KEY, "UNDEFINED_VIN");
                     Map<String, String> temp = new HashMap<String, String>();
+                    Log.d(TAG, "CommandResult: " + commandResult.toString());
                     temp.putAll(commandResult);
+                    Log.d(TAG, "Temp: " + temp.toString());
                     ObdReading reading = new ObdReading(lat, lon, alt, System.currentTimeMillis(), vin, temp, accData, gyroData, orientation);
-                    new UploadAsyncTask().execute(reading);
 
+                    if (readingEventQueue.size() == EVENT_INTERVAL) {
+                        readingEventQueue.clear();
+                    }
+
+                    readingEventQueue.add(reading);
+                    if (readingEventQueue.size() == EVENT_INTERVAL) {
+                        new UploadAsyncTask().execute(readingEventQueue);
+                    }
                 } else if (prefs.getBoolean(ConfigActivity.ENABLE_FULL_LOGGING_KEY, false)) {
                     // Write the current reading to CSV
                     final String vin = prefs.getString(ConfigActivity.VEHICLE_ID_KEY, "UNDEFINED_VIN");
@@ -231,7 +253,7 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
                     temp.putAll(commandResult);
                     ObdReading reading = new ObdReading(lat, lon, alt, System.currentTimeMillis(), vin, temp, accData, gyroData, orientation);
                     myCSVWriter.writeLineCSV(reading);
-                }
+//                }
                 commandResult.clear();
             }
             // run again in period defined in preferences
@@ -305,7 +327,7 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
         } else if (job.getState().equals(ObdCommandJob.ObdCommandJobState.NOT_SUPPORTED)) {
             cmdResult = getString(R.string.status_obd_no_support);
         } else {
-            cmdResult = job.getCommand().getFormattedResult();
+            cmdResult = job.getCommand().getCalculatedResult();
             obdStatusTextView.setText(getString(R.string.status_obd_data));
         }
 
@@ -313,7 +335,8 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
             TextView existingTV = (TextView) vv.findViewWithTag(cmdID);
             existingTV.setText(cmdResult);
         } else addTableRow(cmdID, cmdName, cmdResult);
-        commandResult.put(cmdID, cmdResult);
+        Log.d(TAG, "cmdID" + cmdID.toLowerCase().replace(" ", "") + " " + "cmdResult" + cmdResult);
+        commandResult.put(cmdID.toLowerCase().replace(" ", ""), cmdResult);
         updateTripStatistic(job, cmdID);
     }
 
@@ -740,27 +763,64 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
     /**
      * Uploading asynchronous task
      */
-    private class UploadAsyncTask extends AsyncTask<ObdReading, Void, Void> {
+    private class UploadAsyncTask extends AsyncTask<Object, Void, Void> {
 
         @Override
-        protected Void doInBackground(ObdReading... readings) {
-            Log.d(TAG, "Uploading " + readings.length + " readings..");
+        protected Void doInBackground(Object... params) {
+            Queue<ObdReading> readings = (Queue<ObdReading>) params[0];
+            Log.d(TAG, "Uploading " + readings.size() + " readings..");
             // instantiate reading service client
-            final String endpoint = prefs.getString(ConfigActivity.UPLOAD_URL_KEY, "");
-            RestAdapter restAdapter = new RestAdapter.Builder()
-                    .setEndpoint(endpoint)
+//            final String endpoint = prefs.getString(ConfigActivity.UPLOAD_URL_KEY, "http://127.0.0.1:65432/xd/");
+//            Log.d(TAG, "Endpoint: " + endpoint);
+            URL url = null;
+            final String HOST = "192.168.100.4";
+            final int PORT = 65432;
+            try {
+                url = new URL("http", HOST, PORT,"/");
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+
+            Log.d(TAG, "URL STRING: " + url.toString());
+            final String urlString = url.toString();
+
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(url)
+                    .addConverterFactory(GsonConverterFactory.create())
                     .build();
-            ObdService service = restAdapter.create(ObdService.class);
-            // upload readings
+
+            ObdService service = retrofit.create(ObdService.class);
+
+            //merge json readings
+            JSONObject jsonReading = null;
+            JSONArray mergedReadings = new JSONArray();
             for (ObdReading reading : readings) {
                 try {
-                    Response response = service.uploadReading(reading);
-                    assert response.getStatus() == 200;
-                } catch (RetrofitError re) {
+                    Log.d(TAG, "OBD ReadingS: " + reading.toString());
+                    jsonReading = new JSONObject(reading.toString());
+                    Log.d(TAG, "JSON ReadingS: " + jsonReading.toString());
+                    mergedReadings.put(jsonReading);
+
+                } catch (Error | JSONException re) {
                     Log.e(TAG, re.toString());
                 }
-
             }
+            Log.d(TAG, "Merged ReadingS: " + mergedReadings.toString());
+            // upload readings
+            Call<String> call = service.uploadReading(mergedReadings.toString());
+            call.enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
+                    Log.d(TAG, response.body());
+                }
+
+                @Override
+                public void onFailure(Call<String> call, Throwable t) {
+                    t.printStackTrace();
+                }
+
+            });
+
             Log.d(TAG, "Done");
             return null;
         }
