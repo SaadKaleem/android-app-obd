@@ -19,6 +19,12 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
+import android.media.AudioManager;
+import android.media.AudioTrack;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.media.ToneGenerator;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -55,6 +61,7 @@ import com.github.pires.obd.reader.net.ObdReading;
 import com.github.pires.obd.reader.net.ObdService;
 import com.github.pires.obd.reader.trips.TripLog;
 import com.github.pires.obd.reader.trips.TripRecord;
+import com.google.gson.Gson;
 import com.google.inject.Inject;
 
 import org.json.JSONArray;
@@ -72,6 +79,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Retrofit;
@@ -253,9 +262,9 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
                     temp.putAll(commandResult);
                     ObdReading reading = new ObdReading(lat, lon, alt, System.currentTimeMillis(), vin, temp, accData, gyroData, orientation);
                     myCSVWriter.writeLineCSV(reading);
-//                }
+                }
                 commandResult.clear();
-            }
+//            }
             // run again in period defined in preferences
             new Handler().postDelayed(mQueueCommands, ConfigActivity.getObdUpdatePeriod(prefs));
         }
@@ -773,7 +782,7 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
 //            final String endpoint = prefs.getString(ConfigActivity.UPLOAD_URL_KEY, "http://127.0.0.1:65432/xd/");
 //            Log.d(TAG, "Endpoint: " + endpoint);
             URL url = null;
-            final String HOST = "192.168.100.4";
+            final String HOST = "192.168.100.3";
             final int PORT = 65432;
             try {
                 url = new URL("http", HOST, PORT,"/");
@@ -796,9 +805,9 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
             JSONArray mergedReadings = new JSONArray();
             for (ObdReading reading : readings) {
                 try {
-                    Log.d(TAG, "OBD ReadingS: " + reading.toString());
+//                    Log.d(TAG, "OBD ReadingS: " + reading.toString());
                     jsonReading = new JSONObject(reading.toString());
-                    Log.d(TAG, "JSON ReadingS: " + jsonReading.toString());
+//                    Log.d(TAG, "JSON ReadingS: " + jsonReading.toString());
                     mergedReadings.put(jsonReading);
 
                 } catch (Error | JSONException re) {
@@ -807,15 +816,34 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
             }
             Log.d(TAG, "Merged ReadingS: " + mergedReadings.toString());
             // upload readings
-            Call<String> call = service.uploadReading(mergedReadings.toString());
-            call.enqueue(new Callback<String>() {
+            RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json; charset=utf-8"),(mergedReadings.toString()));
+            Call<ResponseBody> call = service.uploadReading(body);
+            call.enqueue(new Callback<ResponseBody>() {
                 @Override
-                public void onResponse(Call<String> call, Response<String> response) {
-                    Log.d(TAG, response.body());
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    try {
+                        String responseString = response.body().string();
+                        Log.d(TAG, "Response String: " + response.body().string());
+                        Integer pred = Integer.parseInt(responseString.substring(15,16));
+                        Log.d(TAG, String.valueOf(pred));
+                        if (pred == 1) {
+                            Log.d(TAG, "Dangerous");
+                            playDangerousSound();
+                        }
+                        else if (pred == 0) {
+                            Log.d(TAG, "Safe");
+//                            playSafeSound();
+                        }
+
+
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
 
                 @Override
-                public void onFailure(Call<String> call, Throwable t) {
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
                     t.printStackTrace();
                 }
 
@@ -823,6 +851,19 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
 
             Log.d(TAG, "Done");
             return null;
+        }
+
+        private final int TONE_TYPE_DANGEROUS = ToneGenerator.TONE_CDMA_ALERT_CALL_GUARD;
+        private final int TONE_TYPE_SAFE = ToneGenerator.TONE_DTMF_B;
+
+        public void playDangerousSound() {
+            ToneGenerator toneG = new ToneGenerator(AudioManager.STREAM_ALARM, 100);
+            toneG.startTone(TONE_TYPE_DANGEROUS, 300);
+        }
+
+        public void playSafeSound() {
+            ToneGenerator toneG = new ToneGenerator(AudioManager.STREAM_ALARM, 100);
+            toneG.startTone(TONE_TYPE_SAFE, 150);
         }
 
     }

@@ -13,6 +13,8 @@
 
 package com.github.pires.obd.reader.net;
 
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.http.Body;
@@ -29,6 +31,6 @@ public interface ObdService {
             "Connection: close"
     })
     @POST(".")
-    Call<String> uploadReading(@Body String reading);
+    Call<ResponseBody> uploadReading(@Body RequestBody reading);
 
 }
