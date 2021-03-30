@@ -779,11 +779,15 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
             Queue<ObdReading> readings = (Queue<ObdReading>) params[0];
             Log.d(TAG, "Uploading " + readings.size() + " readings..");
             // instantiate reading service client
-//            final String endpoint = prefs.getString(ConfigActivity.UPLOAD_URL_KEY, "http://127.0.0.1:65432/xd/");
+            final String HOST = prefs.getString(ConfigActivity.UPLOAD_URL_KEY, "192.168.100.176");
+            final String S_PORT = prefs.getString(ConfigActivity.UPLOAD_PORT_KEY, "65432");
+            final int PORT = Integer.parseInt(S_PORT);
+            Log.d(TAG,"upload_url: " + HOST);
+            Log.d(TAG,"upload_PORT: " + PORT);
 //            Log.d(TAG, "Endpoint: " + endpoint);
             URL url = null;
-            final String HOST = "192.168.100.3";
-            final int PORT = 65432;
+//            final String HOST = "192.168.100.3";
+//            final int PORT = 65432;
             try {
                 url = new URL("http", HOST, PORT,"/");
             } catch (MalformedURLException e) {

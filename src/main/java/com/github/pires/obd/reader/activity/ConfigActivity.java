@@ -35,6 +35,7 @@ public class ConfigActivity extends PreferenceActivity implements OnPreferenceCh
     public static final String BLUETOOTH_LIST_KEY = "bluetooth_list_preference";
     public static final String UPLOAD_URL_KEY = "upload_url_preference";
     public static final String UPLOAD_DATA_KEY = "upload_data_preference";
+    public static final String UPLOAD_PORT_KEY = "upload_port_preference";
     public static final String OBD_UPDATE_PERIOD_KEY = "obd_update_period_preference";
     public static final String VEHICLE_ID_KEY = "vehicle_id_preference";
     public static final String ENGINE_DISPLACEMENT_KEY = "engine_displacement_preference";
