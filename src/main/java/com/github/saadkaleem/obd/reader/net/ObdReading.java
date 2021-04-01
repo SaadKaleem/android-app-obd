@@ -22,7 +22,7 @@ import java.util.Map;
 public class ObdReading {
     private double latitude, longitude, altitude;
     private long timestamp;
-    private String vehicleid; // vehicle id
+    private String vehicleid;
     private float accX;
     private float accY;
     private float accZ;
@@ -31,7 +31,6 @@ public class ObdReading {
     private float gyroZ;
     private float orientation;
     private Map<String, String> readings;
-//    private accData
 
     private static final String[] NAMES_COLUMNS_ONLY_READINGS = {
             "engine_load", "engine_rpm", "speed", "throttle_pos",};
@@ -41,7 +40,7 @@ public class ObdReading {
     }
 
     public ObdReading(double latitude, double longitude, double altitude, long timestamp,
-                      String vehicleid, Map<String, String> readings, float[] acc, float[] gyro, float orientation) {
+                      String vehicleid, Map<String, String> readings, Object acc, Object gyro, Object orientation) {
         this.latitude = latitude;
         this.longitude = longitude;
         this.altitude = altitude;
@@ -53,13 +52,15 @@ public class ObdReading {
             temp.put(ccln, readings.get(ccln));
         }
         this.readings = temp;
-        this.accX = acc[0];
-        this.accY = acc[1];
-        this.accZ = acc[2];
-        this.gyroX = gyro[0];
-        this.gyroY = gyro[1];
-        this.gyroZ = gyro[2];
-        this.orientation = orientation;
+
+
+        this.accX = ((float[])acc)[0];
+        this.accY = ((float[])acc)[1];
+        this.accZ = ((float[])acc)[2];
+        this.gyroX = ((float[])gyro)[0];
+        this.gyroY = ((float[])gyro)[1];
+        this.gyroZ = ((float[])gyro)[2];
+        this.orientation = (float)orientation;
     }
 
     public float getAccX() {

@@ -54,6 +54,8 @@ import com.github.saadkaleem.obd.reader.io.ObdGatewayService;
 import com.github.saadkaleem.obd.reader.io.ObdProgressListener;
 import com.github.saadkaleem.obd.reader.net.ObdReading;
 import com.github.saadkaleem.obd.reader.net.ObdService;
+import com.github.saadkaleem.obd.reader.net.UploadReadings;
+import com.github.saadkaleem.obd.reader.service.BluetoothServiceConnection;
 import com.github.saadkaleem.obd.reader.trips.TripLog;
 import com.github.saadkaleem.obd.reader.trips.TripRecord;
 import com.google.inject.Inject;
@@ -85,7 +87,7 @@ import roboguice.activity.RoboActivity;
 import roboguice.inject.ContentView;
 import roboguice.inject.InjectView;
 
-// Some code taken from https://github.com/barbeau/gpstest
+import com.github.saadkaleem.obd.reader.listeners.*;
 
 @ContentView(R.layout.main)
 public class MainActivity extends RoboActivity implements ObdProgressListener, LocationListener, GpsStatus.Listener {
@@ -110,18 +112,27 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
         RoboGuice.setUseAnnotationDatabases(false);
     }
 
+    public enum BluetoothServiceStatus {
+        Connected,
+        Connecting,
+        Error,
+        Disabled,
+        Ok
+    }
+
+    public enum OBDServiceStatus {
+        Read, Data, Disconnecting
+    }
+
     public Map<String, String> commandResult = new HashMap<String, String>();
     boolean mGpsIsStarted = false;
     private LocationManager mLocService;
     private LocationProvider mLocProvider;
     private LogCSVWriter myCSVWriter;
     private Location mLastLocation;
-    private float[] accData = new float[3];
-    private float[] gyroData = new float[3];
     private Queue<ObdReading> readingEventQueue = new LinkedList<>();
 
 
-    private float orientation;
     /// the trip log
     private TripLog triplog;
     private TripRecord currentTrip;
@@ -129,68 +140,11 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
     private Context context;
     @InjectView(R.id.compass_text)
     private TextView compass;
-    private final SensorEventListener accListener = new SensorEventListener() {
+    private final SensorListener accListener = new AccelerationListener();
 
-        @Override
-        public void onSensorChanged(SensorEvent sensorEvent) {
-//            Log.d("acc (x)", "onSensorChanged: " + sensorEvent.values[0]);
-//            Log.d("acc (y)", "onSensorChanged: " + sensorEvent.values[1]);
-//            Log.d("acc (z)", "onSensorChanged: " + sensorEvent.values[2]);
-            accData[0] = sensorEvent.values[0];
-            accData[1] = sensorEvent.values[1];
-            accData[2] = sensorEvent.values[2];
-        }
+    private final SensorListener gyroListener = new GyroscopeListener();
+    private final SensorListener orientListener = new OrientationListener();
 
-        @Override
-        public void onAccuracyChanged(Sensor sensor, int i) {
-        }
-    };
-    private final SensorEventListener gyroListener = new SensorEventListener() {
-
-        @Override
-        public void onSensorChanged(SensorEvent sensorEvent) {
-//            Log.d("gyro (x)", "onSensorChanged: " + sensorEvent.values[0]);
-//            Log.d("gyro (y)", "onSensorChanged: " + sensorEvent.values[1]);
-//            Log.d("gyro (z)", "onSensorChanged: " + sensorEvent.values[2]);
-            gyroData[0] = sensorEvent.values[0];
-            gyroData[1] = sensorEvent.values[1];
-            gyroData[2] = sensorEvent.values[2];
-        }
-
-        @Override
-        public void onAccuracyChanged(Sensor sensor, int i) {
-        }
-    };
-    private final SensorEventListener orientListener = new SensorEventListener() {
-
-        public void onSensorChanged(SensorEvent event) {
-            float x = event.values[0];
-            orientation = x;
-            String dir = "";
-            if (x >= 337.5 || x < 22.5) {
-                dir = "N";
-            } else if (x >= 22.5 && x < 67.5) {
-                dir = "NE";
-            } else if (x >= 67.5 && x < 112.5) {
-                dir = "E";
-            } else if (x >= 112.5 && x < 157.5) {
-                dir = "SE";
-            } else if (x >= 157.5 && x < 202.5) {
-                dir = "S";
-            } else if (x >= 202.5 && x < 247.5) {
-                dir = "SW";
-            } else if (x >= 247.5 && x < 292.5) {
-                dir = "W";
-            } else if (x >= 292.5 && x < 337.5) {
-                dir = "NW";
-            }
-            updateTextView(compass, dir);
-        }
-
-        public void onAccuracyChanged(Sensor sensor, int accuracy) {
-            // do nothing
-        }
-    };
     @InjectView(R.id.BT_STATUS)
     private TextView btStatusTextView;
     @InjectView(R.id.OBD_STATUS)
@@ -207,57 +161,57 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
     private PowerManager powerManager;
     @Inject
     private SharedPreferences prefs;
-    private boolean isServiceBound;
-    private AbstractGatewayService service;
+    //    private boolean isServiceBound;
+//    private AbstractGatewayService service;
     private final Runnable mQueueCommands = new Runnable() {
         public void run() {
-//            if (service != null && service.isRunning() && service.queueEmpty()) {
-                queueCommands();
+//            if (serviceConn != null && serviceConn.isRunning() && serviceConn.getService().queueEmpty()) {
+            serviceConn.queueCommands(prefs);
 
-                double lat = 0;
-                double lon = 0;
-                double alt = 0;
-                final int posLen = 7;
-                if (mGpsIsStarted && mLastLocation != null) {
-                    lat = mLastLocation.getLatitude();
-                    lon = mLastLocation.getLongitude();
-                    alt = mLastLocation.getAltitude();
+            double lat = 0;
+            double lon = 0;
+            double alt = 0;
+            final int posLen = 7;
+            if (mGpsIsStarted && mLastLocation != null) {
+                lat = mLastLocation.getLatitude();
+                lon = mLastLocation.getLongitude();
+                alt = mLastLocation.getAltitude();
 
-                    StringBuilder sb = new StringBuilder();
-                    sb.append("Lat: ");
-                    sb.append(String.valueOf(mLastLocation.getLatitude()).substring(0, posLen));
-                    sb.append(" Lon: ");
-                    sb.append(String.valueOf(mLastLocation.getLongitude()).substring(0, posLen));
-                    sb.append(" Alt: ");
-                    sb.append(String.valueOf(mLastLocation.getAltitude()));
-                    gpsStatusTextView.setText(sb.toString());
+                StringBuilder sb = new StringBuilder();
+                sb.append("Lat: ");
+                sb.append(String.valueOf(mLastLocation.getLatitude()).substring(0, posLen));
+                sb.append(" Lon: ");
+                sb.append(String.valueOf(mLastLocation.getLongitude()).substring(0, posLen));
+                sb.append(" Alt: ");
+                sb.append(String.valueOf(mLastLocation.getAltitude()));
+                gpsStatusTextView.setText(sb.toString());
+            }
+            if (prefs.getBoolean(ConfigActivity.UPLOAD_DATA_KEY, false)) {
+                // Upload the current reading by http
+                final String vin = prefs.getString(ConfigActivity.VEHICLE_ID_KEY, "UNDEFINED_VIN");
+                Map<String, String> temp = new HashMap<String, String>();
+                Log.d(TAG, "CommandResult: " + commandResult.toString());
+                temp.putAll(commandResult);
+                Log.d(TAG, "Temp: " + temp.toString());
+                ObdReading reading = new ObdReading(lat, lon, alt, System.currentTimeMillis(), vin, temp, accListener.getSensorData(), gyroListener.getSensorData(), orientListener.getSensorData());
+
+                if (readingEventQueue.size() == EVENT_INTERVAL) {
+                    readingEventQueue.clear();
                 }
-                if (prefs.getBoolean(ConfigActivity.UPLOAD_DATA_KEY, false)) {
-                    // Upload the current reading by http
-                    final String vin = prefs.getString(ConfigActivity.VEHICLE_ID_KEY, "UNDEFINED_VIN");
-                    Map<String, String> temp = new HashMap<String, String>();
-                    Log.d(TAG, "CommandResult: " + commandResult.toString());
-                    temp.putAll(commandResult);
-                    Log.d(TAG, "Temp: " + temp.toString());
-                    ObdReading reading = new ObdReading(lat, lon, alt, System.currentTimeMillis(), vin, temp, accData, gyroData, orientation);
 
-                    if (readingEventQueue.size() == EVENT_INTERVAL) {
-                        readingEventQueue.clear();
-                    }
-
-                    readingEventQueue.add(reading);
-                    if (readingEventQueue.size() == EVENT_INTERVAL) {
-                        new UploadAsyncTask().execute(readingEventQueue);
-                    }
-                } else if (prefs.getBoolean(ConfigActivity.ENABLE_FULL_LOGGING_KEY, false)) {
-                    // Write the current reading to CSV
-                    final String vin = prefs.getString(ConfigActivity.VEHICLE_ID_KEY, "UNDEFINED_VIN");
-                    Map<String, String> temp = new HashMap<String, String>();
-                    temp.putAll(commandResult);
-                    ObdReading reading = new ObdReading(lat, lon, alt, System.currentTimeMillis(), vin, temp, accData, gyroData, orientation);
-                    myCSVWriter.writeLineCSV(reading);
+                readingEventQueue.add(reading);
+                if (readingEventQueue.size() == EVENT_INTERVAL) {
+                    new UploadReadings(prefs).execute(readingEventQueue);
                 }
-                commandResult.clear();
+            } else if (prefs.getBoolean(ConfigActivity.ENABLE_FULL_LOGGING_KEY, false)) {
+                // Write the current reading to CSV
+                final String vin = prefs.getString(ConfigActivity.VEHICLE_ID_KEY, "UNDEFINED_VIN");
+                Map<String, String> temp = new HashMap<String, String>();
+                temp.putAll(commandResult);
+                ObdReading reading = new ObdReading(lat, lon, alt, System.currentTimeMillis(), vin, temp, accListener.getSensorData(), gyroListener.getSensorData(), orientListener.getSensorData());
+                myCSVWriter.writeLineCSV(reading);
+            }
+            commandResult.clear();
 //            }
             // run again in period defined in preferences
             new Handler().postDelayed(mQueueCommands, ConfigActivity.getObdUpdatePeriod(prefs));
@@ -267,40 +221,8 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
     private Sensor accSensor = null;
     private Sensor gyroSensor = null;
     private PowerManager.WakeLock wakeLock = null;
-    private boolean preRequisites = true;
-    private ServiceConnection serviceConn = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder binder) {
-            Log.d(TAG, className.toString() + " service is bound");
-            isServiceBound = true;
-            service = ((AbstractGatewayService.AbstractGatewayServiceBinder) binder).getService();
-            service.setContext(MainActivity.this);
-            Log.d(TAG, "Starting live data");
-            try {
-                service.startService();
-                if (preRequisites)
-                    btStatusTextView.setText(getString(R.string.status_bluetooth_connected));
-            } catch (IOException ioe) {
-                Log.e(TAG, "Failure Starting live data");
-                btStatusTextView.setText(getString(R.string.status_bluetooth_error_connecting));
-                doUnbindService();
-            }
-        }
 
-        @Override
-        protected Object clone() throws CloneNotSupportedException {
-            return super.clone();
-        }
-
-        // This method is *only* called when the connection to the service is lost unexpectedly
-        // and *not* when the client unbinds (http://developer.android.com/guide/components/bound-services.html)
-        // So the isServiceBound attribute should also be set to false when we unbind from the service.
-        @Override
-        public void onServiceDisconnected(ComponentName className) {
-            Log.d(TAG, className.toString() + " service is unbound");
-            isServiceBound = false;
-        }
-    };
+    private BluetoothServiceConnection serviceConn = new BluetoothServiceConnection(this);
 
     public static String LookUpCommand(String txt) {
         for (AvailableCommandNames item : AvailableCommandNames.values()) {
@@ -418,9 +340,8 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
         }
 
         releaseWakeLockIfHeld();
-        if (isServiceBound) {
-            doUnbindService();
-        }
+        serviceConn.destroy();
+
 
         endTrip();
 
@@ -462,14 +383,14 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
         final BluetoothAdapter btAdapter = BluetoothAdapter
                 .getDefaultAdapter();
 
-        preRequisites = btAdapter != null && btAdapter.isEnabled();
-        if (!preRequisites && prefs.getBoolean(ConfigActivity.ENABLE_BT_KEY, false)) {
-            preRequisites = btAdapter.enable();
+        serviceConn.setPreRequisites(btAdapter != null && btAdapter.isEnabled());
+        if (!serviceConn.isPreRequisites() && prefs.getBoolean(ConfigActivity.ENABLE_BT_KEY, false)) {
+            serviceConn.setPreRequisites(btAdapter.enable());
         }
 
         gpsInit();
 
-        if (!preRequisites) {
+        if (!serviceConn.isPreRequisites()) {
             showDialog(BLUETOOTH_DISABLED);
             btStatusTextView.setText(getString(R.string.status_bluetooth_disabled));
         } else {
@@ -490,11 +411,6 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
         menu.add(0, SETTINGS, 0, getString(R.string.menu_settings));
         return true;
     }
-
-    // private void staticCommand() {
-    // Intent commandIntent = new Intent(this, ObdReaderCommandActivity.class);
-    // startActivity(commandIntent);
-    // }
 
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -534,11 +450,12 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
         startActivity(new Intent(this, ExampleRtspActivity.class));
 
     }
+
     private void startLiveData() {
         Log.d(TAG, "Starting live data..");
 
         tl.removeAllViews(); //start fresh
-        doBindService();
+        serviceConn.doBindService();
 
         currentTrip = triplog.startTrip();
         if (currentTrip == null)
@@ -573,7 +490,7 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
 
         gpsStop();
 
-        doUnbindService();
+        serviceConn.doUnbindService();
         endTrip();
 
         releaseWakeLockIfHeld();
@@ -638,7 +555,7 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
         MenuItem settingsItem = menu.findItem(SETTINGS);
         MenuItem getDTCItem = menu.findItem(GET_DTC);
 
-        if (service != null && service.isRunning()) {
+        if (serviceConn != null && serviceConn.isRunning()) {
             getDTCItem.setEnabled(false);
             startItem.setEnabled(false);
             stopItem.setEnabled(true);
@@ -674,46 +591,6 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
         tl.addView(tr, params);
     }
 
-    /**
-     *
-     */
-    private void queueCommands() {
-        if (isServiceBound) {
-            for (ObdCommand Command : ObdConfig.getCommands()) {
-                if (prefs.getBoolean(Command.getName(), true))
-                    service.queueJob(new ObdCommandJob(Command));
-            }
-        }
-    }
-
-    private void doBindService() {
-        if (!isServiceBound) {
-            Log.d(TAG, "Binding OBD service..");
-            if (preRequisites) {
-                btStatusTextView.setText(getString(R.string.status_bluetooth_connecting));
-                Intent serviceIntent = new Intent(this, ObdGatewayService.class);
-                bindService(serviceIntent, serviceConn, Context.BIND_AUTO_CREATE);
-            } else {
-                btStatusTextView.setText(getString(R.string.status_bluetooth_disabled));
-                Intent serviceIntent = new Intent(this, MockObdGatewayService.class);
-                bindService(serviceIntent, serviceConn, Context.BIND_AUTO_CREATE);
-            }
-        }
-    }
-
-    private void doUnbindService() {
-        if (isServiceBound) {
-            if (service.isRunning()) {
-                service.stopService();
-                if (preRequisites)
-                    btStatusTextView.setText(getString(R.string.status_bluetooth_ok));
-            }
-            Log.d(TAG, "Unbinding OBD service..");
-            unbindService(serviceConn);
-            isServiceBound = false;
-            obdStatusTextView.setText(getString(R.string.status_obd_disconnected));
-        }
-    }
 
     public void onLocationChanged(Location location) {
         mLastLocation = location;
@@ -745,6 +622,7 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
         }
     }
 
+
     private synchronized void gpsStart() {
         if (!mGpsIsStarted && mLocProvider != null && mLocService != null && mLocService.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             mLocService.requestLocationUpdates(mLocProvider.getName(), ConfigActivity.getGpsUpdatePeriod(prefs), ConfigActivity.getGpsDistanceUpdatePeriod(prefs), this);
@@ -763,106 +641,35 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
         }
     }
 
-    /**
-     * Uploading asynchronous task
-     */
-    private class UploadAsyncTask extends AsyncTask<Object, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Object... params) {
-            Queue<ObdReading> readings = (Queue<ObdReading>) params[0];
-            Log.d(TAG, "Uploading " + readings.size() + " readings..");
-            // instantiate reading service client
-            final String HOST = prefs.getString(ConfigActivity.UPLOAD_URL_KEY, "192.168.100.176");
-            final String S_PORT = prefs.getString(ConfigActivity.UPLOAD_PORT_KEY, "65432");
-            final int PORT = Integer.parseInt(S_PORT);
-            Log.d(TAG,"upload_url: " + HOST);
-            Log.d(TAG,"upload_PORT: " + PORT);
-//            Log.d(TAG, "Endpoint: " + endpoint);
-            URL url = null;
-//            final String HOST = "192.168.100.3";
-//            final int PORT = 65432;
-            try {
-                url = new URL("http", HOST, PORT,"/");
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            }
-
-            Log.d(TAG, "URL STRING: " + url.toString());
-            final String urlString = url.toString();
-
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl(url)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
-
-            ObdService service = retrofit.create(ObdService.class);
-
-            //merge json readings
-            JSONObject jsonReading = null;
-            JSONArray mergedReadings = new JSONArray();
-            for (ObdReading reading : readings) {
-                try {
-//                    Log.d(TAG, "OBD ReadingS: " + reading.toString());
-                    jsonReading = new JSONObject(reading.toString());
-//                    Log.d(TAG, "JSON ReadingS: " + jsonReading.toString());
-                    mergedReadings.put(jsonReading);
-
-                } catch (Error | JSONException re) {
-                    Log.e(TAG, re.toString());
-                }
-            }
-            Log.d(TAG, "Merged ReadingS: " + mergedReadings.toString());
-            // upload readings
-            RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json; charset=utf-8"),(mergedReadings.toString()));
-            Call<ResponseBody> call = service.uploadReading(body);
-            call.enqueue(new Callback<ResponseBody>() {
-                @Override
-                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                    try {
-                        String responseString = response.body().string();
-                        Log.d(TAG, "Response String: " + response.body().string());
-                        Integer pred = Integer.parseInt(responseString.substring(15,16));
-                        Log.d(TAG, String.valueOf(pred));
-                        if (pred == 1) {
-                            Log.d(TAG, "Dangerous");
-                            playDangerousSound();
-                        }
-                        else if (pred == 0) {
-                            Log.d(TAG, "Safe");
-//                            playSafeSound();
-                        }
-
-
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<ResponseBody> call, Throwable t) {
-                    t.printStackTrace();
-                }
-
-            });
-
-            Log.d(TAG, "Done");
-            return null;
+    public void updateBluetoothStatusText(BluetoothServiceStatus status) {
+        switch (status) {
+            case Connected:
+                btStatusTextView.setText(getString(R.string.status_bluetooth_connected));
+                break;
+            case Disabled:
+                btStatusTextView.setText(getString(R.string.status_bluetooth_disabled));
+                break;
+            case Error:
+                btStatusTextView.setText(getString(R.string.status_bluetooth_error_connecting));
+                break;
+            case Ok:
+                btStatusTextView.setText(getString(R.string.status_bluetooth_ok));
+                break;
         }
+    }
 
-        private final int TONE_TYPE_DANGEROUS = ToneGenerator.TONE_CDMA_ALERT_CALL_GUARD;
-        private final int TONE_TYPE_SAFE = ToneGenerator.TONE_DTMF_B;
+    public void updateOBDStatusText(OBDServiceStatus status) {
+        switch (status) {
+            case Data:
+                btStatusTextView.setText(getString(R.string.status_bluetooth_connected));
+                break;
+            case Disconnecting:
+                btStatusTextView.setText(getString(R.string.status_bluetooth_disabled));
+                break;
+            case Read:
+                btStatusTextView.setText(getString(R.string.status_bluetooth_error_connecting));
+                break;
 
-        public void playDangerousSound() {
-            ToneGenerator toneG = new ToneGenerator(AudioManager.STREAM_ALARM, 100);
-            toneG.startTone(TONE_TYPE_DANGEROUS, 300);
         }
-
-        public void playSafeSound() {
-            ToneGenerator toneG = new ToneGenerator(AudioManager.STREAM_ALARM, 100);
-            toneG.startTone(TONE_TYPE_SAFE, 150);
-        }
-
     }
 }
