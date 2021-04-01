@@ -4,6 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".cam.ExampleRtspActivity">
+    tools:context="com.github.saadkaleem.obd.reader.cam.ExampleRtspActivity">
 
 </androidx.constraintlayout.widget.ConstraintLayout>
