@@ -44,7 +44,7 @@ public class SharedPrefManager {
         return sharedPreferences.getString("auth_token", "0") != "0";
     }
 
-    public String getUser() {
+    public String getToken() {
         SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
         return sharedPreferences.getString("auth_token", "0");
     }
