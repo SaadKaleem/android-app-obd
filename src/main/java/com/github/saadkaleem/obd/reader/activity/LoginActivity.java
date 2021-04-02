@@ -95,7 +95,7 @@ public class LoginActivity extends RoboActivity implements View.OnClickListener 
                 if (response.isSuccessful()) {
                     LoginResponse loginResponse = response.body();
                     Log.d("response body", loginResponse.getToken());
-                    Toast.makeText(LoginActivity.this, loginResponse.getToken(), Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(LoginActivity.this, loginResponse.getToken(), Toast.LENGTH_SHORT).show();
 
                     SharedPrefManager.getInstance(LoginActivity.this)
                             .saveToken(loginResponse.getToken());

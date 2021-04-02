@@ -37,6 +37,7 @@ import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.pires.obd.commands.ObdCommand;
 import com.github.pires.obd.commands.SpeedCommand;
@@ -56,6 +57,7 @@ import com.github.saadkaleem.obd.reader.net.ObdReading;
 import com.github.saadkaleem.obd.reader.net.ObdService;
 import com.github.saadkaleem.obd.reader.net.UploadReadings;
 import com.github.saadkaleem.obd.reader.service.BluetoothServiceConnection;
+import com.github.saadkaleem.obd.reader.storage.SharedPrefManager;
 import com.github.saadkaleem.obd.reader.trips.TripLog;
 import com.github.saadkaleem.obd.reader.trips.TripRecord;
 import com.google.inject.Inject;
@@ -105,6 +107,7 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
     private static final int NO_GPS_SUPPORT = 9;
     private static final int TRIPS_LIST = 10;
     private static final int SAVE_TRIP_NOT_AVAILABLE = 11;
+    private static final int LOGOUT = 13;
     private static boolean bluetoothDefaultIsEnable = false;
     private static final int EVENT_INTERVAL = 3;
 
@@ -303,7 +306,7 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        Toast.makeText(MainActivity.this,SharedPrefManager.getInstance(MainActivity.this).getToken(), Toast.LENGTH_LONG);
         final BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
         if (btAdapter != null)
             bluetoothDefaultIsEnable = btAdapter.isEnabled();
@@ -409,6 +412,7 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
         menu.add(0, GET_DTC, 0, getString(R.string.menu_get_dtc));
         menu.add(0, TRIPS_LIST, 0, getString(R.string.menu_trip_list));
         menu.add(0, SETTINGS, 0, getString(R.string.menu_settings));
+        menu.add(0, LOGOUT, 0, "Logout");
         return true;
     }
 
@@ -432,7 +436,12 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
             case TRIPS_LIST:
                 startActivity(new Intent(this, TripListActivity.class));
                 return true;
-            // case COMMAND_ACTIVITY:
+            case LOGOUT:
+                SharedPrefManager.getInstance(MainActivity.this).clear();
+                startActivity(new Intent(this, LoginActivity.class));
+                return true;
+
+                // case COMMAND_ACTIVITY:
             // staticCommand();
             // return true;
         }
