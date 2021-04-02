@@ -3,99 +3,91 @@
 title __TRIPS's Class Diagram__\n
 
   namespace  {
-    namespace om.github.saadkaleem.obd.reader {
-      namespace trips {
-        class com.github.saadkaleem.obd.reader.trips.TripListAdapter {
-            - activity : Activity
-            - records : List<TripRecord>
-            + TripListAdapter()
-            + getView()
-            + notifyDataSetChanged()
-            - calcDiffTime()
-        }
+    namespace om.github.saadkaleem.obd.reader.trips {
+      class com.github.saadkaleem.obd.reader.trips.TripListAdapter {
+          - activity : Activity
+          - records : List<TripRecord>
+          + TripListAdapter()
+          + getView()
+          + notifyDataSetChanged()
+          - calcDiffTime()
       }
     }
   }
   
 
   namespace  {
-    namespace om.github.saadkaleem.obd.reader {
-      namespace trips {
-        class com.github.saadkaleem.obd.reader.trips.TripLog {
-            {static} + DATABASE_CREATE : String[]
-            {static} + DATABASE_DELETE : String[]
-            {static} + DATABASE_NAME : String
-            {static} + DATABASE_VERSION : int
-            {static} - RECORDS_TABLE : String
-            {static} - RECORDS_TABLE_COLUMNS : String[]
-            {static} - RECORD_END_DATE : String
-            {static} - RECORD_ENGINE_RUNTIME : String
-            {static} - RECORD_ID : String
-            {static} - RECORD_RPM_MAX : String
-            {static} - RECORD_SPEED_MAX : String
-            {static} - RECORD_START_DATE : String
-            {static} - TAG : String
-            - context : Context
-            - db : SQLiteDatabase
-            {static} - instance : TripLog
-            + deleteTrip()
-            {static} + getInstance()
-            + readAllRecords()
-            + startTrip()
-            + updateRecord()
-            - ASSERT()
-            - TripLog()
-            - getContentValues()
-            - getRecordFromCursor()
-            - update()
-        }
+    namespace om.github.saadkaleem.obd.reader.trips {
+      class com.github.saadkaleem.obd.reader.trips.TripLog {
+          {static} + DATABASE_CREATE : String[]
+          {static} + DATABASE_DELETE : String[]
+          {static} + DATABASE_NAME : String
+          {static} + DATABASE_VERSION : int
+          {static} - RECORDS_TABLE : String
+          {static} - RECORDS_TABLE_COLUMNS : String[]
+          {static} - RECORD_END_DATE : String
+          {static} - RECORD_ENGINE_RUNTIME : String
+          {static} - RECORD_ID : String
+          {static} - RECORD_RPM_MAX : String
+          {static} - RECORD_SPEED_MAX : String
+          {static} - RECORD_START_DATE : String
+          {static} - TAG : String
+          - context : Context
+          - db : SQLiteDatabase
+          {static} - instance : TripLog
+          + deleteTrip()
+          {static} + getInstance()
+          + readAllRecords()
+          + startTrip()
+          + updateRecord()
+          - ASSERT()
+          - TripLog()
+          - getContentValues()
+          - getRecordFromCursor()
+          - update()
       }
     }
   }
   
 
   namespace  {
-    namespace om.github.saadkaleem.obd.reader {
-      namespace trips {
-        class com.github.saadkaleem.obd.reader.trips.TripLogOpenHelper {
-            {static} - TAG : String
-            + TripLogOpenHelper()
-            + onCreate()
-            + onUpgrade()
-            - execSQL()
-        }
+    namespace om.github.saadkaleem.obd.reader.trips {
+      class com.github.saadkaleem.obd.reader.trips.TripLogOpenHelper {
+          {static} - TAG : String
+          + TripLogOpenHelper()
+          + onCreate()
+          + onUpgrade()
+          - execSQL()
       }
     }
   }
   
 
   namespace  {
-    namespace om.github.saadkaleem.obd.reader {
-      namespace trips {
-        class com.github.saadkaleem.obd.reader.trips.TripRecord {
-            - endDate : Date
-            - engineRpmMax : Integer
-            - engineRuntime : String
-            - id : Integer
-            - speed : Integer
-            - startDate : Date
-            + TripRecord()
-            + getEndDate()
-            + getEngineRpmMax()
-            + getEngineRuntime()
-            + getID()
-            + getSpeedMax()
-            + getStartDate()
-            + getStartDateString()
-            + setEndDate()
-            + setEngineRpmMax()
-            + setEngineRpmMax()
-            + setEngineRuntime()
-            + setID()
-            + setSpeedMax()
-            + setSpeedMax()
-            + setStartDate()
-        }
+    namespace om.github.saadkaleem.obd.reader.trips {
+      class com.github.saadkaleem.obd.reader.trips.TripRecord {
+          - endDate : Date
+          - engineRpmMax : Integer
+          - engineRuntime : String
+          - id : Integer
+          - speed : Integer
+          - startDate : Date
+          + TripRecord()
+          + getEndDate()
+          + getEngineRpmMax()
+          + getEngineRuntime()
+          + getID()
+          + getSpeedMax()
+          + getStartDate()
+          + getStartDateString()
+          + setEndDate()
+          + setEngineRpmMax()
+          + setEngineRpmMax()
+          + setEngineRuntime()
+          + setID()
+          + setSpeedMax()
+          + setSpeedMax()
+          + setStartDate()
       }
     }
   }

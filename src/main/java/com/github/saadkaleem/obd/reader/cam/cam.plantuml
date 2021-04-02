@@ -3,72 +3,66 @@
 title __CAM's Class Diagram__\n
 
   namespace  {
-    namespace om.github.saadkaleem.obd.reader {
-      namespace cam {
-        class com.github.saadkaleem.obd.reader.cam.CameraActivity {
-            {static} + MEDIA_TYPE_IMAGE : int
-            {static} + MEDIA_TYPE_VIDEO : int
-            {static} + TAG : String
-            {static} + captureButton : Button
-            {static} + indicatorButton : ImageButton
-            + outputFile : String
-            - isRecording : boolean
-            - mCamera : Camera
-            - mediaRecorder : MediaRecorder
-            - preview : SurfaceView
-            {static} + getCameraInstance()
-            + onCreate()
-            # onPause()
-            {static} - getOutputMediaFile()
-            {static} - getOutputMediaFileUri()
-            - prepareVideoRecorder()
-            - releaseCamera()
-            - releaseMediaRecorder()
-        }
+    namespace om.github.saadkaleem.obd.reader.cam {
+      class com.github.saadkaleem.obd.reader.cam.CameraActivity {
+          {static} + MEDIA_TYPE_IMAGE : int
+          {static} + MEDIA_TYPE_VIDEO : int
+          {static} + TAG : String
+          {static} + captureButton : Button
+          {static} + indicatorButton : ImageButton
+          + outputFile : String
+          - isRecording : boolean
+          - mCamera : Camera
+          - mediaRecorder : MediaRecorder
+          - preview : SurfaceView
+          {static} + getCameraInstance()
+          + onCreate()
+          # onPause()
+          {static} - getOutputMediaFile()
+          {static} - getOutputMediaFileUri()
+          - prepareVideoRecorder()
+          - releaseCamera()
+          - releaseMediaRecorder()
       }
     }
   }
   
 
   namespace  {
-    namespace om.github.saadkaleem.obd.reader {
-      namespace cam {
-        class com.github.saadkaleem.obd.reader.cam.CameraPreview {
-            {static} - TAG : String
-            - mCamera : Camera
-            - mHolder : SurfaceHolder
-            + CameraPreview()
-            + surfaceChanged()
-            + surfaceCreated()
-            + surfaceDestroyed()
-        }
+    namespace om.github.saadkaleem.obd.reader.cam {
+      class com.github.saadkaleem.obd.reader.cam.CameraPreview {
+          {static} - TAG : String
+          - mCamera : Camera
+          - mHolder : SurfaceHolder
+          + CameraPreview()
+          + surfaceChanged()
+          + surfaceCreated()
+          + surfaceDestroyed()
       }
     }
   }
   
 
   namespace  {
-    namespace om.github.saadkaleem.obd.reader {
-      namespace cam {
-        class com.github.saadkaleem.obd.reader.cam.ExampleRtspActivity {
-            - bRecord : Button
-            - button : Button
-            - currentDateAndTime : String
-            - etUrl : EditText
-            - folder : File
-            - rtspCamera1 : RtspCamera1
-            + onAuthErrorRtsp()
-            + onAuthSuccessRtsp()
-            + onClick()
-            + onConnectionFailedRtsp()
-            + onConnectionSuccessRtsp()
-            + onDisconnectRtsp()
-            + onNewBitrateRtsp()
-            + surfaceChanged()
-            + surfaceCreated()
-            + surfaceDestroyed()
-            # onCreate()
-        }
+    namespace om.github.saadkaleem.obd.reader.cam {
+      class com.github.saadkaleem.obd.reader.cam.ExampleRtspActivity {
+          - bRecord : Button
+          - button : Button
+          - currentDateAndTime : String
+          - etUrl : EditText
+          - folder : File
+          - rtspCamera1 : RtspCamera1
+          + onAuthErrorRtsp()
+          + onAuthSuccessRtsp()
+          + onClick()
+          + onConnectionFailedRtsp()
+          + onConnectionSuccessRtsp()
+          + onDisconnectRtsp()
+          + onNewBitrateRtsp()
+          + surfaceChanged()
+          + surfaceCreated()
+          + surfaceDestroyed()
+          # onCreate()
       }
     }
   }

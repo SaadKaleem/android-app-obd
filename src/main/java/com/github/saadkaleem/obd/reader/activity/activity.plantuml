@@ -1,293 +1,268 @@
 @startuml
 
 title __ACTIVITY's Class Diagram__\n
+skinparam linetype polyline
+skinparam linetype ortho
 
- 
-    namespace om.github.saadkaleem.obd.reader {
-      namespace activity {
-        class com.github.saadkaleem.obd.reader.activity.ConfigActivity {
-            {static} + BLUETOOTH_LIST_KEY : String
-            {static} + COMMANDS_SCREEN_KEY : String
-            {static} + CONFIG_READER_KEY : String
-            {static} + DEV_EMAIL_KEY : String
-            {static} + DIRECTORY_FULL_LOGGING_KEY : String
-            {static} + ENABLE_BT_KEY : String
-            {static} + ENABLE_FULL_LOGGING_KEY : String
-            {static} + ENABLE_GPS_KEY : String
-            {static} + ENGINE_DISPLACEMENT_KEY : String
-            {static} + GPS_DISTANCE_PERIOD_KEY : String
-            {static} + GPS_UPDATE_PERIOD_KEY : String
-            {static} + IMPERIAL_UNITS_KEY : String
-            {static} + MAX_FUEL_ECON_KEY : String
-            {static} + OBD_UPDATE_PERIOD_KEY : String
-            {static} + PROTOCOLS_LIST_KEY : String
-            {static} + UPLOAD_DATA_KEY : String
-            {static} + UPLOAD_PORT_KEY : String
-            {static} + UPLOAD_URL_KEY : String
-            {static} + VEHICLE_ID_KEY : String
-            {static} + VOLUMETRIC_EFFICIENCY_KEY : String
-            {static} + getEngineDisplacement()
-            {static} + getGpsDistanceUpdatePeriod()
-            {static} + getGpsUpdatePeriod()
-            {static} + getMaxFuelEconomy()
-            {static} + getObdCommands()
-            {static} + getObdUpdatePeriod()
-            {static} + getReaderConfigCommands()
-            {static} + getVolumetricEfficieny()
-            + onCreate()
-            + onPreferenceChange()
-            - checkGps()
-            - hideGPSCategory()
-         }
+    namespace com.github.saadkaleem.obd.reader.activity {
+      class com.github.saadkaleem.obd.reader.activity.ConfigActivity {
+          {static} + BLUETOOTH_LIST_KEY : String
+          {static} + COMMANDS_SCREEN_KEY : String
+          {static} + CONFIG_READER_KEY : String
+          {static} + DEV_EMAIL_KEY : String
+          {static} + DIRECTORY_FULL_LOGGING_KEY : String
+          {static} + ENABLE_BT_KEY : String
+          {static} + ENABLE_FULL_LOGGING_KEY : String
+          {static} + ENABLE_GPS_KEY : String
+          {static} + ENGINE_DISPLACEMENT_KEY : String
+          {static} + GPS_DISTANCE_PERIOD_KEY : String
+          {static} + GPS_UPDATE_PERIOD_KEY : String
+          {static} + IMPERIAL_UNITS_KEY : String
+          {static} + MAX_FUEL_ECON_KEY : String
+          {static} + OBD_UPDATE_PERIOD_KEY : String
+          {static} + PROTOCOLS_LIST_KEY : String
+          {static} + UPLOAD_DATA_KEY : String
+          {static} + UPLOAD_PORT_KEY : String
+          {static} + UPLOAD_URL_KEY : String
+          {static} + VEHICLE_ID_KEY : String
+          {static} + VOLUMETRIC_EFFICIENCY_KEY : String
+          {static} + getEngineDisplacement()
+          {static} + getGpsDistanceUpdatePeriod()
+          {static} + getGpsUpdatePeriod()
+          {static} + getMaxFuelEconomy()
+          {static} + getObdCommands()
+          {static} + getObdUpdatePeriod()
+          {static} + getReaderConfigCommands()
+          {static} + getVolumetricEfficieny()
+          + onCreate()
+          + onPreferenceChange()
+          - checkGps()
+          - hideGPSCategory()
       }
     }
-  
-  
 
- 
-    namespace om.github.saadkaleem.obd.reader {
-      namespace activity {
-        class com.github.saadkaleem.obd.reader.activity.ConfirmDialog {
-            {static} + DIALOG_CONFIRM_DELETE_ID : int
-            {static} + createDialog()
-            {static} + getDialog()
-         }
+
+
+
+    namespace com.github.saadkaleem.obd.reader.activity {
+      class com.github.saadkaleem.obd.reader.activity.ConfirmDialog {
+          {static} + DIALOG_CONFIRM_DELETE_ID : int
+          {static} + createDialog()
+          {static} + getDialog()
       }
     }
-  
-  
 
- 
-    namespace om.github.saadkaleem.obd.reader {
-      namespace activity {
-        interface com.github.saadkaleem.obd.reader.activity.ConfirmDialog.Listener {
-            {abstract} + onConfirmationDialogResponse()
-         }
+
+
+
+    namespace com.github.saadkaleem.obd.reader.activity {
+      interface com.github.saadkaleem.obd.reader.activity.ConfirmDialog.Listener {
+          {abstract} + onConfirmationDialogResponse()
       }
     }
-  
-  
 
- 
-    namespace om.github.saadkaleem.obd.reader {
-      namespace activity {
-        class com.github.saadkaleem.obd.reader.activity.MainActivity {
-            + commandResult : Map<String, String>
-            ~ mGpsIsStarted : boolean
-            {static} - BLUETOOTH_DISABLED : int
-            {static} - EVENT_INTERVAL : int
-            {static} - GET_DTC : int
-            {static} - NO_BLUETOOTH_ID : int
-            {static} - NO_GPS_SUPPORT : int
-            {static} - NO_ORIENTATION_SENSOR : int
-            {static} - SAVE_TRIP_NOT_AVAILABLE : int
-            {static} - SETTINGS : int
-            {static} - START_CAM : int
-            {static} - START_LIVE_DATA : int
-            {static} - STOP_LIVE_DATA : int
-            {static} - TABLE_ROW_MARGIN : int
-            {static} - TAG : String
-            {static} - TRIPS_LIST : int
-            - accData : float[]
-            - accListener : SensorEventListener
-            - accSensor : Sensor
-            {static} - bluetoothDefaultIsEnable : boolean
-            - btStatusTextView : TextView
-            - compass : TextView
-            - context : Context
-            - gpsStatusTextView : TextView
-            - gyroData : float[]
-            - gyroListener : SensorEventListener
-            - gyroSensor : Sensor
-            - isServiceBound : boolean
-            - mLastLocation : Location
-            - mLocProvider : LocationProvider
-            - mLocService : LocationManager
-            - mQueueCommands : Runnable
-            - obdStatusTextView : TextView
-            - orientListener : SensorEventListener
-            - orientSensor : Sensor
-            - orientation : float
-            - powerManager : PowerManager
-            - preRequisites : boolean
-            - prefs : SharedPreferences
-            - readingEventQueue : Queue<ObdReading>
-            - sensorManager : SensorManager
-            - serviceConn : ServiceConnection
-            - tl : TableLayout
-            - vv : LinearLayout
-            - wakeLock : WakeLock
-            {static} + LookUpCommand()
-            + onCreate()
-            + onCreateOptionsMenu()
-            + onGpsStatusChanged()
-            + onLocationChanged()
-            + onOptionsItemSelected()
-            + onPrepareOptionsMenu()
-            + onProviderDisabled()
-            + onProviderEnabled()
-            + onStatusChanged()
-            + stateUpdate()
-            + updateTextView()
-            # endTrip()
-            # onCreateDialog()
-            # onDestroy()
-            # onPause()
-            # onResume()
-            # onStart()
-            - addTableRow()
-            - doBindService()
-            - doUnbindService()
-            - getTroubleCodes()
-            - gpsInit()
-            - gpsStart()
-            - gpsStop()
-            - queueCommands()
-            - releaseWakeLockIfHeld()
-            - startCam()
-            - startLiveData()
-            - stopLiveData()
-            - updateConfig()
-            - updateTripStatistic()
-         }
+
+
+
+    namespace com.github.saadkaleem.obd.reader.activity {
+      class com.github.saadkaleem.obd.reader.activity.MainActivity {
+          + commandResult : Map<String, String>
+          ~ mGpsIsStarted : boolean
+          {static} - BLUETOOTH_DISABLED : int
+          {static} - EVENT_INTERVAL : int
+          {static} - GET_DTC : int
+          {static} - NO_BLUETOOTH_ID : int
+          {static} - NO_GPS_SUPPORT : int
+          {static} - NO_ORIENTATION_SENSOR : int
+          {static} - SAVE_TRIP_NOT_AVAILABLE : int
+          {static} - SETTINGS : int
+          {static} - START_CAM : int
+          {static} - START_LIVE_DATA : int
+          {static} - STOP_LIVE_DATA : int
+          {static} - TABLE_ROW_MARGIN : int
+          {static} - TAG : String
+          {static} - TRIPS_LIST : int
+          - accSensor : Sensor
+          {static} - bluetoothDefaultIsEnable : boolean
+          - btStatusTextView : TextView
+          - compass : TextView
+          - context : Context
+          - gpsStatusTextView : TextView
+          - gyroSensor : Sensor
+          - mLastLocation : Location
+          - mLocProvider : LocationProvider
+          - mLocService : LocationManager
+          - mQueueCommands : Runnable
+          - obdStatusTextView : TextView
+          - orientSensor : Sensor
+          - powerManager : PowerManager
+          - prefs : SharedPreferences
+          - readingEventQueue : Queue<ObdReading>
+          - sensorManager : SensorManager
+          - tl : TableLayout
+          - vv : LinearLayout
+          - wakeLock : WakeLock
+          {static} + LookUpCommand()
+          + onCreate()
+          + onCreateOptionsMenu()
+          + onGpsStatusChanged()
+          + onLocationChanged()
+          + onOptionsItemSelected()
+          + onPrepareOptionsMenu()
+          + onProviderDisabled()
+          + onProviderEnabled()
+          + onStatusChanged()
+          + stateUpdate()
+          + updateBluetoothStatusText()
+          + updateOBDStatusText()
+          + updateTextView()
+          # endTrip()
+          # onCreateDialog()
+          # onDestroy()
+          # onPause()
+          # onResume()
+          # onStart()
+          - addTableRow()
+          - getTroubleCodes()
+          - gpsInit()
+          - gpsStart()
+          - gpsStop()
+          - releaseWakeLockIfHeld()
+          - startCam()
+          - startLiveData()
+          - stopLiveData()
+          - updateConfig()
+          - updateTripStatistic()
       }
     }
-  
-  
 
- 
-    namespace om.github.saadkaleem.obd.reader {
-      namespace activity {
-        class com.github.saadkaleem.obd.reader.activity.MainActivity.UploadAsyncTask {
-            - TONE_TYPE_DANGEROUS : int
-            - TONE_TYPE_SAFE : int
-            + playDangerousSound()
-            + playSafeSound()
-            # doInBackground()
-         }
+
+
+
+    namespace com.github.saadkaleem.obd.reader.activity {
+      enum BluetoothServiceStatus {
+        Connected
+        Connecting
+        Disabled
+        Error
+        Ok
       }
     }
-  
-  
 
- 
-    namespace om.github.saadkaleem.obd.reader {
-      namespace activity {
-        class com.github.saadkaleem.obd.reader.activity.TripListActivity {
-            - records : List<TripRecord>
-            - selectedRow : int
-            + onConfirmationDialogResponse()
-            + onContextItemSelected()
-            + onCreateContextMenu()
-            + onCreateOptionsMenu()
-            + onOptionsItemSelected()
-            # deleteRow()
-            # onCreate()
-            # onCreateDialog()
-            - deleteTrip()
-         }
+
+
+
+    namespace com.github.saadkaleem.obd.reader.activity {
+      enum OBDServiceStatus {
+        Data
+        Disconnecting
+        Read
       }
     }
-  
-  
 
- 
-    namespace om.github.saadkaleem.obd.reader {
-      namespace activity {
-        class com.github.saadkaleem.obd.reader.activity.TroubleCodesActivity {
-            ~ prefs : SharedPreferences
-            {static} - CANNOT_CONNECT_TO_DEVICE : int
-            {static} - CLEAR_DTC : int
-            {static} - DATA_OK : int
-            {static} - NO_BLUETOOTH_DEVICE_SELECTED : int
-            {static} - NO_DATA : int
-            {static} - OBD_COMMAND_FAILURE : int
-            {static} - OBD_COMMAND_FAILURE_IE : int
-            {static} - OBD_COMMAND_FAILURE_IO : int
-            {static} - OBD_COMMAND_FAILURE_MIS : int
-            {static} - OBD_COMMAND_FAILURE_NODATA : int
-            {static} - OBD_COMMAND_FAILURE_UTC : int
-            {static} - TAG : String
-            - dev : BluetoothDevice
-            - mHandler : Handler
-            - progressDialog : ProgressDialog
-            - remoteDevice : String
-            - sock : BluetoothSocket
-            + makeToast()
-            + makeToastLong()
-            + onCreateOptionsMenu()
-            + onOptionsItemSelected()
-            # onCreate()
-            ~ getDict()
-            - dataOk()
-         }
+
+
+
+    namespace com.github.saadkaleem.obd.reader.activity {
+      class com.github.saadkaleem.obd.reader.activity.TripListActivity {
+          - records : List<TripRecord>
+          - selectedRow : int
+          + onConfirmationDialogResponse()
+          + onContextItemSelected()
+          + onCreateContextMenu()
+          + onCreateOptionsMenu()
+          + onOptionsItemSelected()
+          # deleteRow()
+          # onCreate()
+          # onCreateDialog()
+          - deleteTrip()
       }
     }
-  
-  
 
- 
-    namespace om.github.saadkaleem.obd.reader {
-      namespace activity {
-        class com.github.saadkaleem.obd.reader.activity.TroubleCodesActivity.ClearDTC {
-            + getResult()
-         }
+
+
+
+    namespace com.github.saadkaleem.obd.reader.activity {
+      class com.github.saadkaleem.obd.reader.activity.TroubleCodesActivity {
+          ~ prefs : SharedPreferences
+          {static} - CANNOT_CONNECT_TO_DEVICE : int
+          {static} - CLEAR_DTC : int
+          {static} - DATA_OK : int
+          {static} - NO_BLUETOOTH_DEVICE_SELECTED : int
+          {static} - NO_DATA : int
+          {static} - OBD_COMMAND_FAILURE : int
+          {static} - OBD_COMMAND_FAILURE_IE : int
+          {static} - OBD_COMMAND_FAILURE_IO : int
+          {static} - OBD_COMMAND_FAILURE_MIS : int
+          {static} - OBD_COMMAND_FAILURE_NODATA : int
+          {static} - OBD_COMMAND_FAILURE_UTC : int
+          {static} - TAG : String
+          - dev : BluetoothDevice
+          - mHandler : Handler
+          - progressDialog : ProgressDialog
+          - remoteDevice : String
+          - sock : BluetoothSocket
+          + makeToast()
+          + makeToastLong()
+          + onCreateOptionsMenu()
+          + onOptionsItemSelected()
+          # onCreate()
+          ~ getDict()
+          - dataOk()
       }
     }
-  
-  
 
- 
-    namespace om.github.saadkaleem.obd.reader {
-      namespace activity {
-        class com.github.saadkaleem.obd.reader.activity.TroubleCodesActivity.GetTroubleCodesTask {
-            + closeSocket()
-            # doInBackground()
-            # onPostExecute()
-            # onPreExecute()
-            # onProgressUpdate()
-         }
+
+
+
+    namespace com.github.saadkaleem.obd.reader.activity {
+      class com.github.saadkaleem.obd.reader.activity.TroubleCodesActivity.ClearDTC {
+          + getResult()
       }
     }
-  
-  
 
- 
-    namespace om.github.saadkaleem.obd.reader {
-      namespace activity {
-        class com.github.saadkaleem.obd.reader.activity.TroubleCodesActivity.ModifiedTroubleCodesObdCommand {
-            + getResult()
-         }
+
+
+
+    namespace com.github.saadkaleem.obd.reader.activity {
+      class com.github.saadkaleem.obd.reader.activity.TroubleCodesActivity.GetTroubleCodesTask {
+          + closeSocket()
+          # doInBackground()
+          # onPostExecute()
+          # onPreExecute()
+          # onProgressUpdate()
       }
     }
-  
-  
 
-'  com.github.saadkaleem.obd.reader.activity.ConfigActivity .up.|> android.preference.Preference.OnPreferenceChangeListener
-'  com.github.saadkaleem.obd.reader.activity.ConfigActivity -up-|> android.preference.PreferenceActivity
+
+
+
+    namespace com.github.saadkaleem.obd.reader.activity {
+      class com.github.saadkaleem.obd.reader.activity.TroubleCodesActivity.ModifiedTroubleCodesObdCommand {
+          + getResult()
+      }
+    }
+
+
+
   com.github.saadkaleem.obd.reader.activity.ConfirmDialog +-down- com.github.saadkaleem.obd.reader.activity.ConfirmDialog.Listener
-'  com.github.saadkaleem.obd.reader.activity.MainActivity .up.|> android.location.GpsStatus.Listener
-'  com.github.saadkaleem.obd.reader.activity.MainActivity .up.|> android.location.LocationListener
   com.github.saadkaleem.obd.reader.activity.MainActivity .up.|> com.github.saadkaleem.obd.reader.io.ObdProgressListener
-'  com.github.saadkaleem.obd.reader.activity.MainActivity -up-|> roboguice.activity.RoboActivity
+  com.github.saadkaleem.obd.reader.activity.MainActivity o-- com.github.saadkaleem.obd.reader.listeners.SensorListener : accListener
   com.github.saadkaleem.obd.reader.activity.MainActivity o-- com.github.saadkaleem.obd.reader.trips.TripRecord : currentTrip
+  com.github.saadkaleem.obd.reader.activity.MainActivity o-- com.github.saadkaleem.obd.reader.listeners.SensorListener : gyroListener
   com.github.saadkaleem.obd.reader.activity.MainActivity o-- com.github.saadkaleem.obd.reader.io.LogCSVWriter : myCSVWriter
-  com.github.saadkaleem.obd.reader.activity.MainActivity o-- com.github.saadkaleem.obd.reader.io.AbstractGatewayService : service
+  com.github.saadkaleem.obd.reader.activity.MainActivity o-- com.github.saadkaleem.obd.reader.listeners.SensorListener : orientListener
+  com.github.saadkaleem.obd.reader.activity.MainActivity o-- com.github.saadkaleem.obd.reader.service.BluetoothServiceConnection : serviceConn
   com.github.saadkaleem.obd.reader.activity.MainActivity o-- com.github.saadkaleem.obd.reader.trips.TripLog : triplog
-  com.github.saadkaleem.obd.reader.activity.MainActivity +-down- com.github.saadkaleem.obd.reader.activity.MainActivity.UploadAsyncTask
-'  com.github.saadkaleem.obd.reader.activity.MainActivity.UploadAsyncTask -up-|> android.os.AsyncTask
+  com.github.saadkaleem.obd.reader.activity.MainActivity +-down- com.github.saadkaleem.obd.reader.activity.MainActivity.BluetoothServiceStatus
+  com.github.saadkaleem.obd.reader.activity.MainActivity +-down- com.github.saadkaleem.obd.reader.activity.MainActivity.OBDServiceStatus
   com.github.saadkaleem.obd.reader.activity.TripListActivity .up.|> com.github.saadkaleem.obd.reader.activity.ConfirmDialog.Listener
-'  com.github.saadkaleem.obd.reader.activity.TripListActivity -up-|> roboguice.activity.RoboActivity
   com.github.saadkaleem.obd.reader.activity.TripListActivity o-- com.github.saadkaleem.obd.reader.trips.TripListAdapter : adapter
   com.github.saadkaleem.obd.reader.activity.TripListActivity o-- com.github.saadkaleem.obd.reader.trips.TripLog : triplog
-'  com.github.saadkaleem.obd.reader.activity.TroubleCodesActivity -up-|> android.app.Activity
   com.github.saadkaleem.obd.reader.activity.TroubleCodesActivity o-- com.github.saadkaleem.obd.reader.activity.TroubleCodesActivity.GetTroubleCodesTask : gtct
   com.github.saadkaleem.obd.reader.activity.TroubleCodesActivity +-down- com.github.saadkaleem.obd.reader.activity.TroubleCodesActivity.ClearDTC
   com.github.saadkaleem.obd.reader.activity.TroubleCodesActivity +-down- com.github.saadkaleem.obd.reader.activity.TroubleCodesActivity.GetTroubleCodesTask
   com.github.saadkaleem.obd.reader.activity.TroubleCodesActivity +-down- com.github.saadkaleem.obd.reader.activity.TroubleCodesActivity.ModifiedTroubleCodesObdCommand
-'  com.github.saadkaleem.obd.reader.activity.TroubleCodesActivity.ClearDTC -up-|> com.github.pires.obd.commands.protocol.ResetTroubleCodesCommand
-'  com.github.saadkaleem.obd.reader.activity.TroubleCodesActivity.GetTroubleCodesTask -up-|> android.os.AsyncTask
-'  com.github.saadkaleem.obd.reader.activity.TroubleCodesActivity.ModifiedTroubleCodesObdCommand -up-|> com.github.pires.obd.commands.control.TroubleCodesCommand
 
 
 right footer

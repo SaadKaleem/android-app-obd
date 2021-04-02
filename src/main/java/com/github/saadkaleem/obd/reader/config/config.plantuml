@@ -2,15 +2,11 @@
 
 title __CONFIG's Class Diagram__\n
 
-  namespace  {
-    namespace om.github.saadkaleem.obd.reader {
-      namespace config {
-        class com.github.saadkaleem.obd.reader.config.ObdConfig {
-            {static} + getCommands()
-        }
+    namespace om.github.saadkaleem.obd.reader.config {
+      class com.github.saadkaleem.obd.reader.config.ObdConfig {
+          {static} + getCommands()
       }
     }
-  }
   
 
 

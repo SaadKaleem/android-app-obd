@@ -3,62 +3,74 @@
 title __NET's Class Diagram__\n
 
   namespace  {
-    namespace om.github.saadkaleem.obd.reader {
-      namespace net {
-        class com.github.saadkaleem.obd.reader.net.ObdReading {
-            {static} - NAMES_COLUMNS_ONLY_READINGS : String[]
-            - accX : float
-            - accY : float
-            - accZ : float
-            - altitude : double
-            - gyroX : float
-            - gyroY : float
-            - gyroZ : float
-            - latitude : double
-            - longitude : double
-            - orientation : float
-            - readings : Map<String, String>
-            - timestamp : long
-            - vehicleid : String
-            + ObdReading()
-            + ObdReading()
-            + getAccX()
-            + getAccY()
-            + getAccZ()
-            + getAltitude()
-            + getGyroX()
-            + getGyroY()
-            + getGyroZ()
-            + getLatitude()
-            + getLongitude()
-            + getOrientation()
-            + getReadings()
-            + getTimestamp()
-            + getVin()
-            + setAltitude()
-            + setLatitude()
-            + setLongitude()
-            + setReadings()
-            + setTimestamp()
-            + setVin()
-            + toString()
-        }
+    namespace om.github.saadkaleem.obd.reader.net {
+      class com.github.saadkaleem.obd.reader.net.ObdReading {
+          {static} - NAMES_COLUMNS_ONLY_READINGS : String[]
+          - accX : float
+          - accY : float
+          - accZ : float
+          - altitude : double
+          - gyroX : float
+          - gyroY : float
+          - gyroZ : float
+          - latitude : double
+          - longitude : double
+          - orientation : float
+          - readings : Map<String, String>
+          - timestamp : long
+          - vehicleid : String
+          + ObdReading()
+          + ObdReading()
+          + getAccX()
+          + getAccY()
+          + getAccZ()
+          + getAltitude()
+          + getGyroX()
+          + getGyroY()
+          + getGyroZ()
+          + getLatitude()
+          + getLongitude()
+          + getOrientation()
+          + getReadings()
+          + getTimestamp()
+          + getVin()
+          + setAltitude()
+          + setLatitude()
+          + setLongitude()
+          + setReadings()
+          + setTimestamp()
+          + setVin()
+          + toString()
       }
     }
   }
   
 
   namespace  {
-    namespace om.github.saadkaleem.obd.reader {
-      namespace net {
-        interface com.github.saadkaleem.obd.reader.net.ObdService {
-            {abstract} + uploadReading()
-        }
+    namespace om.github.saadkaleem.obd.reader.net {
+      interface com.github.saadkaleem.obd.reader.net.ObdService {
+          {abstract} + uploadReading()
       }
     }
   }
   
 
+  namespace  {
+    namespace om.github.saadkaleem.obd.reader.net {
+      class com.github.saadkaleem.obd.reader.net.UploadReadings {
+          {static} - TAG : String
+          - TONE_TYPE_DANGEROUS : int
+          - TONE_TYPE_SAFE : int
+          - prefs : SharedPreferences
+          + UploadReadings()
+          + playDangerousSound()
+          # doInBackground()
+      }
+    }
+  }
+  
+
+  com.github.saadkaleem.obd.reader.net.UploadReadings -up-|> android.os.AsyncTask
 
 
 right footer

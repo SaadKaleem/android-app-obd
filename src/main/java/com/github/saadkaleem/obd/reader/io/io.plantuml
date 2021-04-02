@@ -2,173 +2,153 @@
 
 title __IO's Class Diagram__\n
 
-  namespace  {
-    namespace om.github.saadkaleem.obd.reader {
-      namespace io {
-        abstract class com.github.saadkaleem.obd.reader.io.AbstractGatewayService {
-            {static} + NOTIFICATION_ID : int
-            # ctx : Context
-            # isQueueRunning : boolean
-            # isRunning : boolean
-            # jobsQueue : BlockingQueue<ObdCommandJob>
-            # notificationManager : NotificationManager
-            # queueCounter : Long
-            ~ t : Thread
-            {static} - TAG : String
-            - binder : IBinder
-            + isRunning()
-            + onBind()
-            + onCreate()
-            + onDestroy()
-            + queueEmpty()
-            + queueJob()
-            + setContext()
-            {abstract} + startService()
-            {abstract} + stopService()
-            {abstract} # executeQueue()
-            # showNotification()
-        }
-      }
-    }
-  }
-  
 
-  namespace  {
-    namespace om.github.saadkaleem.obd.reader {
-      namespace io {
-        class com.github.saadkaleem.obd.reader.io.AbstractGatewayService.AbstractGatewayServiceBinder {
-            + getService()
-        }
+    namespace om.github.saadkaleem.obd.reader.io {
+      abstract class com.github.saadkaleem.obd.reader.io.AbstractGatewayService {
+          {static} + NOTIFICATION_ID : int
+          # ctx : Context
+          # isQueueRunning : boolean
+          # isRunning : boolean
+          # jobsQueue : BlockingQueue<ObdCommandJob>
+          # notificationManager : NotificationManager
+          # queueCounter : Long
+          ~ t : Thread
+          {static} - TAG : String
+          - binder : IBinder
+          + isRunning()
+          + onBind()
+          + onCreate()
+          + onDestroy()
+          + queueEmpty()
+          + queueJob()
+          + setContext()
+          {abstract} + startService()
+          {abstract} + stopService()
+          {abstract} # executeQueue()
+          # showNotification()
       }
     }
-  }
-  
 
-  namespace  {
-    namespace om.github.saadkaleem.obd.reader {
-      namespace io {
-        class com.github.saadkaleem.obd.reader.io.BluetoothManager {
-            {static} - MY_UUID : UUID
-            {static} - TAG : String
-            {static} + connect()
-        }
-      }
-    }
-  }
-  
 
-  namespace  {
-    namespace om.github.saadkaleem.obd.reader {
-      namespace io {
-        class com.github.saadkaleem.obd.reader.io.LogCSVWriter {
-            {static} - HEADER_CSV : String
-            {static} - NAMES_COLUMNS : String[]
-            {static} - NAMES_COLUMNS_ONLY_READINGS : String[]
-            {static} - TAG : String
-            - buf : BufferedWriter
-            {static} - dir : String
-            - isFirstLine : boolean
-            + LogCSVWriter()
-            + closeLogCSVWriter()
-            + writeLineCSV()
-            - addLine()
-        }
-      }
-    }
-  }
-  
 
-  namespace  {
-    namespace om.github.saadkaleem.obd.reader {
-      namespace io {
-        class com.github.saadkaleem.obd.reader.io.MockObdGatewayService {
-            {static} - TAG : String
-            + startService()
-            + stopService()
-            # executeQueue()
-        }
-      }
-    }
-  }
-  
 
-  namespace  {
-    namespace om.github.saadkaleem.obd.reader {
-      namespace io {
-        class com.github.saadkaleem.obd.reader.io.ObdCommandJob {
-            - _command : ObdCommand
-            - _id : Long
-            + ObdCommandJob()
-            + getCommand()
-            + getId()
-            + getState()
-            + setId()
-            + setState()
-        }
+    namespace om.github.saadkaleem.obd.reader.io {
+      class com.github.saadkaleem.obd.reader.io.AbstractGatewayService.AbstractGatewayServiceBinder {
+          + getService()
       }
     }
-  }
-  
 
-  namespace  {
-    namespace om.github.saadkaleem.obd.reader {
-      namespace io {
-        enum ObdCommandJobState {
-          EXECUTION_ERROR
-          FINISHED
-          NEW
-          NOT_SUPPORTED
-          QUEUE_ERROR
-          RUNNING
-        }
-      }
-    }
-  }
-  
 
-  namespace  {
-    namespace om.github.saadkaleem.obd.reader {
-      namespace io {
-        class com.github.saadkaleem.obd.reader.io.ObdGatewayService {
-            ~ prefs : SharedPreferences
-            {static} - TAG : String
-            - binder : IBinder
-            - dev : BluetoothDevice
-            - sock : BluetoothSocket
-            - sockFallback : BluetoothSocket
-            + isRunning()
-            + queueJob()
-            {static} + saveLogcatToFile()
-            + startService()
-            + stopService()
-            # executeQueue()
-            - startObdConnection()
-        }
-      }
-    }
-  }
-  
 
-  namespace  {
-    namespace om.github.saadkaleem.obd.reader {
-      namespace io {
-        class com.github.saadkaleem.obd.reader.io.ObdGatewayService.ObdGatewayServiceBinder {
-            + getService()
-        }
-      }
-    }
-  }
-  
 
-  namespace  {
-    namespace om.github.saadkaleem.obd.reader {
-      namespace io {
-        interface com.github.saadkaleem.obd.reader.io.ObdProgressListener {
-            {abstract} + stateUpdate()
-        }
+    namespace om.github.saadkaleem.obd.reader.io {
+      class com.github.saadkaleem.obd.reader.io.BluetoothManager {
+          {static} - MY_UUID : UUID
+          {static} - TAG : String
+          {static} + connect()
       }
     }
-  }
+
+
+
+
+    namespace om.github.saadkaleem.obd.reader.io {
+      class com.github.saadkaleem.obd.reader.io.LogCSVWriter {
+          {static} - HEADER_CSV : String
+          {static} - NAMES_COLUMNS : String[]
+          {static} - NAMES_COLUMNS_ONLY_READINGS : String[]
+          {static} - TAG : String
+          - buf : BufferedWriter
+          {static} - dir : String
+          - isFirstLine : boolean
+          + LogCSVWriter()
+          + closeLogCSVWriter()
+          + writeLineCSV()
+          - addLine()
+      }
+    }
+
+
+
+
+    namespace om.github.saadkaleem.obd.reader.io {
+      class com.github.saadkaleem.obd.reader.io.MockObdGatewayService {
+          {static} - TAG : String
+          + startService()
+          + stopService()
+          # executeQueue()
+      }
+    }
+
+
+
+
+    namespace om.github.saadkaleem.obd.reader.io {
+      class com.github.saadkaleem.obd.reader.io.ObdCommandJob {
+          - _command : ObdCommand
+          - _id : Long
+          + ObdCommandJob()
+          + getCommand()
+          + getId()
+          + getState()
+          + setId()
+          + setState()
+      }
+    }
+
+
+
+
+    namespace om.github.saadkaleem.obd.reader.io {
+      enum ObdCommandJobState {
+        EXECUTION_ERROR
+        FINISHED
+        NEW
+        NOT_SUPPORTED
+        QUEUE_ERROR
+        RUNNING
+      }
+    }
+
+
+
+
+    namespace om.github.saadkaleem.obd.reader.io {
+      class com.github.saadkaleem.obd.reader.io.ObdGatewayService {
+          ~ prefs : SharedPreferences
+          {static} - TAG : String
+          - binder : IBinder
+          - dev : BluetoothDevice
+          - sock : BluetoothSocket
+          - sockFallback : BluetoothSocket
+          + isRunning()
+          + queueJob()
+          {static} + saveLogcatToFile()
+          + startService()
+          + stopService()
+          # executeQueue()
+          - startObdConnection()
+      }
+    }
+
+
+
+
+    namespace om.github.saadkaleem.obd.reader.io {
+      class com.github.saadkaleem.obd.reader.io.ObdGatewayService.ObdGatewayServiceBinder {
+          + getService()
+      }
+    }
+
+
+
+
+    namespace om.github.saadkaleem.obd.reader.io {
+      interface com.github.saadkaleem.obd.reader.io.ObdProgressListener {
+          {abstract} + stateUpdate()
+      }
+    }
+
   
 
   com.github.saadkaleem.obd.reader.io.AbstractGatewayService -up-|> roboguice.service.RoboService

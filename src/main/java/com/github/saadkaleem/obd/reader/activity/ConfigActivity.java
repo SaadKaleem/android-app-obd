@@ -27,9 +27,7 @@ import com.github.saadkaleem.obd.reader.config.ObdConfig;
 import java.util.ArrayList;
 import java.util.Set;
 
-/**
- * Configuration com.github.pires.obd.reader.activity.
- */
+
 public class ConfigActivity extends PreferenceActivity implements OnPreferenceChangeListener {
 
     public static final String BLUETOOTH_LIST_KEY = "bluetooth_list_preference";
