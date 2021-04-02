@@ -206,7 +206,7 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
 
                 readingEventQueue.add(reading);
                 if (readingEventQueue.size() == EVENT_INTERVAL) {
-                    new UploadReadings(prefs).execute(readingEventQueue);
+                    new UploadReadings(prefs, MainActivity.this).execute(readingEventQueue);
                 }
             } else if (prefs.getBoolean(ConfigActivity.ENABLE_FULL_LOGGING_KEY, false)) {
                 // Write the current reading to CSV

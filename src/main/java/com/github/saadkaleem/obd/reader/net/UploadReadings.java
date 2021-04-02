@@ -1,5 +1,6 @@
 package com.github.saadkaleem.obd.reader.net;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.ToneGenerator;
@@ -8,6 +9,7 @@ import android.util.Log;
 
 import com.github.saadkaleem.obd.reader.activity.ConfigActivity;
 import com.github.saadkaleem.obd.reader.service.BluetoothServiceConnection;
+import com.github.saadkaleem.obd.reader.storage.SharedPrefManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -31,9 +33,11 @@ public class UploadReadings extends AsyncTask<Object, Void, Void> {
     private final int TONE_TYPE_DANGEROUS = ToneGenerator.TONE_CDMA_ALERT_CALL_GUARD;
     private final int TONE_TYPE_SAFE = ToneGenerator.TONE_DTMF_B;
     private SharedPreferences prefs;
+    private Context mContext;
 
-    public UploadReadings(SharedPreferences prefs) {
+    public UploadReadings(SharedPreferences prefs, Context ctx) {
         this.prefs = prefs;
+        this.mContext = ctx;
     }
 
     @Override
@@ -67,6 +71,7 @@ public class UploadReadings extends AsyncTask<Object, Void, Void> {
         ObdService service = retrofit.create(ObdService.class);
 
         //merge json readings
+
         JSONObject jsonReading = null;
         JSONArray mergedReadings = new JSONArray();
         for (ObdReading reading : readings) {
@@ -80,9 +85,19 @@ public class UploadReadings extends AsyncTask<Object, Void, Void> {
                 Log.e(TAG, re.toString());
             }
         }
+        JSONObject message = new JSONObject();
+
+//        Log.d("testing_context", prefs.getString("auth_token", "0"));
+        Log.d("testing_context", SharedPrefManager.getInstance(mContext).getToken());
+        try {
+            message.put("token", SharedPrefManager.getInstance(mContext).getToken());
+            message.put("data", mergedReadings);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         Log.d(TAG, "Merged ReadingS: " + mergedReadings.toString());
         // upload readings
-        RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json; charset=utf-8"), (mergedReadings.toString()));
+        RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json; charset=utf-8"), (message.toString()));
         Call<ResponseBody> call = service.uploadReading(body);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
