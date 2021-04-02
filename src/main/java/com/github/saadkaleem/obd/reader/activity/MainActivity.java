@@ -115,6 +115,8 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
         RoboGuice.setUseAnnotationDatabases(false);
     }
 
+    private boolean stopped;
+
     public enum BluetoothServiceStatus {
         Connected,
         Connecting,
@@ -217,8 +219,9 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
             commandResult.clear();
 //            }
             // run again in period defined in preferences
-
-            new Handler().postDelayed(mQueueCommands, ConfigActivity.getObdUpdatePeriod(prefs));
+            if (!stopped) {
+                new Handler().postDelayed(mQueueCommands, ConfigActivity.getObdUpdatePeriod(prefs));
+            }
         }
     };
     private Sensor orientSensor = null;
@@ -307,7 +310,7 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Toast.makeText(MainActivity.this,SharedPrefManager.getInstance(MainActivity.this).getToken(), Toast.LENGTH_LONG);
+        Toast.makeText(MainActivity.this, SharedPrefManager.getInstance(MainActivity.this).getToken(), Toast.LENGTH_LONG);
         final BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
         if (btAdapter != null)
             bluetoothDefaultIsEnable = btAdapter.isEnabled();
@@ -420,9 +423,11 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case START_LIVE_DATA:
+                stopped=false;
                 startLiveData();
                 return true;
             case STOP_LIVE_DATA:
+                stopped=true;
                 stopLiveData();
                 return true;
             case START_CAM:
@@ -442,7 +447,7 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
                 startActivity(new Intent(this, LoginActivity.class));
                 return true;
 
-                // case COMMAND_ACTIVITY:
+            // case COMMAND_ACTIVITY:
             // staticCommand();
             // return true;
         }
