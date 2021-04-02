@@ -125,7 +125,7 @@ public class LoginActivity extends RoboActivity implements View.OnClickListener 
                 userLogin();
                 break;
             case R.id.textViewRegister:
-                startActivity(new Intent(this, MainActivity.class));
+                startActivity(new Intent(this, SignUpActivity.class));
                 break;
         }
     }

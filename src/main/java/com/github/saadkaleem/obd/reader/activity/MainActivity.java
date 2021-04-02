@@ -217,6 +217,7 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
             commandResult.clear();
 //            }
             // run again in period defined in preferences
+
             new Handler().postDelayed(mQueueCommands, ConfigActivity.getObdUpdatePeriod(prefs));
         }
     };
