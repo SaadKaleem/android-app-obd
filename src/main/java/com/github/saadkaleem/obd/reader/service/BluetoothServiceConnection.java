@@ -84,12 +84,11 @@ public class BluetoothServiceConnection implements ServiceConnection {
             Log.d(TAG, "Binding OBD service..");
             if (preRequisites) {
                 context.updateBluetoothStatusText(MainActivity.BluetoothServiceStatus.Connecting);
-
+                startOBDIntent();
             } else {
-
                 context.updateBluetoothStatusText(MainActivity.BluetoothServiceStatus.Disabled);
+                startMockOBDIntent();
             }
-            startIntent();
         }
     }
 
@@ -117,7 +116,12 @@ public class BluetoothServiceConnection implements ServiceConnection {
         return service;
     }
 
-    private void startIntent() {
+    private void startOBDIntent() {
+        Intent serviceIntent = new Intent(context, ObdGatewayService.class);
+        context.bindService(serviceIntent, this, Context.BIND_AUTO_CREATE);
+    }
+
+    private void startMockOBDIntent() {
         Intent serviceIntent = new Intent(context, MockObdGatewayService.class);
         context.bindService(serviceIntent, this, Context.BIND_AUTO_CREATE);
     }

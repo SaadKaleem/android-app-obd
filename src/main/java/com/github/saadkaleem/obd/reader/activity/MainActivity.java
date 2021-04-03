@@ -174,7 +174,7 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
 //    private AbstractGatewayService service;
     private final Runnable mQueueCommands = new Runnable() {
         public void run() {
-//            if (serviceConn != null && serviceConn.isRunning() && serviceConn.getService().queueEmpty()) {
+            if (serviceConn != null && serviceConn.isRunning() && serviceConn.getService().queueEmpty()) {
             serviceConn.queueCommands(prefs);
 
             double lat = 0;
@@ -221,7 +221,7 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
                 myCSVWriter.writeLineCSV(reading);
             }
             commandResult.clear();
-//            }
+            }
             // run again in period defined in preferences
             if (!stopped) {
                 new Handler().postDelayed(mQueueCommands, ConfigActivity.getObdUpdatePeriod(prefs));
