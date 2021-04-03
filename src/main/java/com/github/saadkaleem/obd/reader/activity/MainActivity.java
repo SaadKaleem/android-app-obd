@@ -30,9 +30,11 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.ViewGroup.MarginLayoutParams;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -115,7 +117,7 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
         RoboGuice.setUseAnnotationDatabases(false);
     }
 
-    private boolean stopped;
+    private boolean stopped = true;
 
     public enum BluetoothServiceStatus {
         Connected,
@@ -160,6 +162,8 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
     private LinearLayout vv;
     @InjectView(R.id.data_table)
     private TableLayout tl;
+    @InjectView(R.id.TrackingBtn)
+    private Button trackingBtn;
     @Inject
     private SensorManager sensorManager;
     @Inject
@@ -311,6 +315,21 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Toast.makeText(MainActivity.this, SharedPrefManager.getInstance(MainActivity.this).getToken(), Toast.LENGTH_LONG);
+        trackingBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (stopped){
+                    stopped = false;
+                    startLiveData();
+                    trackingBtn.setText("Stop Tracking");
+                }
+                else{
+                    stopped = true;
+                    stopLiveData();
+                    trackingBtn.setText("Start Tracking");
+                }
+            }
+        });
         final BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
         if (btAdapter != null)
             bluetoothDefaultIsEnable = btAdapter.isEnabled();
@@ -410,8 +429,8 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(0, START_LIVE_DATA, 0, getString(R.string.menu_start_live_data));
-        menu.add(0, STOP_LIVE_DATA, 0, getString(R.string.menu_stop_live_data));
+//        menu.add(0, START_LIVE_DATA, 0, getString(R.string.menu_start_live_data));
+//        menu.add(0, STOP_LIVE_DATA, 0, getString(R.string.menu_stop_live_data));
         menu.add(0, START_CAM, 0, getString(R.string.menu_start_cam));
         menu.add(0, GET_DTC, 0, getString(R.string.menu_get_dtc));
         menu.add(0, TRIPS_LIST, 0, getString(R.string.menu_trip_list));
@@ -422,14 +441,14 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
 
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case START_LIVE_DATA:
-                stopped=false;
-                startLiveData();
-                return true;
-            case STOP_LIVE_DATA:
-                stopped=true;
-                stopLiveData();
-                return true;
+//            case START_LIVE_DATA:
+//                stopped=false;
+//                startLiveData();
+//                return true;
+//            case STOP_LIVE_DATA:
+//                stopped=true;
+//                stopLiveData();
+//                return true;
             case START_CAM:
                 startCam();
                 return true;
@@ -509,26 +528,26 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
         endTrip();
 
         releaseWakeLockIfHeld();
-        final String devemail = prefs.getString(ConfigActivity.DEV_EMAIL_KEY, null);
-        if (devemail != null) {
-            DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    switch (which) {
-                        case DialogInterface.BUTTON_POSITIVE:
-                            ObdGatewayService.saveLogcatToFile(getApplicationContext(), devemail);
-                            break;
-
-                        case DialogInterface.BUTTON_NEGATIVE:
-                            //No button clicked
-                            break;
-                    }
-                }
-            };
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage("Where there issues?\nThen please send us the logs.\nSend Logs?").setPositiveButton("Yes", dialogClickListener)
-                    .setNegativeButton("No", dialogClickListener).show();
-        }
+//        final String devemail = prefs.getString(ConfigActivity.DEV_EMAIL_KEY, null);
+//        if (devemail != null) {
+//            DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+//                @Override
+//                public void onClick(DialogInterface dialog, int which) {
+//                    switch (which) {
+//                        case DialogInterface.BUTTON_POSITIVE:
+//                            ObdGatewayService.saveLogcatToFile(getApplicationContext(), devemail);
+//                            break;
+//
+//                        case DialogInterface.BUTTON_NEGATIVE:
+//                            //No button clicked
+//                            break;
+//                    }
+//                }
+//            };
+//            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//            builder.setMessage("Where there issues?\nThen please send us the logs.\nSend Logs?").setPositiveButton("Yes", dialogClickListener)
+//                    .setNegativeButton("No", dialogClickListener).show();
+//        }
 
         if (myCSVWriter != null) {
             myCSVWriter.closeLogCSVWriter();
@@ -565,20 +584,20 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
     }
 
     public boolean onPrepareOptionsMenu(Menu menu) {
-        MenuItem startItem = menu.findItem(START_LIVE_DATA);
-        MenuItem stopItem = menu.findItem(STOP_LIVE_DATA);
+//        MenuItem startItem = menu.findItem(START_LIVE_DATA);
+//        MenuItem stopItem = menu.findItem(STOP_LIVE_DATA);
         MenuItem settingsItem = menu.findItem(SETTINGS);
         MenuItem getDTCItem = menu.findItem(GET_DTC);
 
         if (serviceConn != null && serviceConn.isRunning()) {
             getDTCItem.setEnabled(false);
-            startItem.setEnabled(false);
-            stopItem.setEnabled(true);
+//            startItem.setEnabled(false);
+//            stopItem.setEnabled(true);
             settingsItem.setEnabled(false);
         } else {
             getDTCItem.setEnabled(true);
-            stopItem.setEnabled(false);
-            startItem.setEnabled(true);
+//            startItem.setEnabled(true);
+//            stopItem.setEnabled(false);
             settingsItem.setEnabled(true);
         }
 

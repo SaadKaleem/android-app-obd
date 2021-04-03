@@ -133,6 +133,25 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="" />
+
     </TableRow>
+
+    <LinearLayout
+        android:id="@+id/ButtonsRow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:minHeight="80dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/TrackingBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:minWidth="110dp"
+            android:text="Start Tracking" />
+    </LinearLayout>
 
 </LinearLayout>

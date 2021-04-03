@@ -11,7 +11,7 @@ import android.widget.Toast;
 import com.github.pires.obd.reader.R;
 
 import com.github.saadkaleem.obd.reader.models.LoginResponse;
-import com.github.saadkaleem.obd.reader.net.RetrofitClient;
+import com.github.saadkaleem.obd.reader.net.AuthClient;
 import com.github.saadkaleem.obd.reader.storage.SharedPrefManager;
 
 import retrofit2.Call;
@@ -77,7 +77,7 @@ public class LoginActivity extends RoboActivity implements View.OnClickListener 
             return;
         }
 
-        Call<LoginResponse> call = RetrofitClient
+        Call<LoginResponse> call = AuthClient
                 .getInstance().getApi().userLogin(email, password);
 
         call.enqueue(new Callback<LoginResponse>() {

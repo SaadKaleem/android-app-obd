@@ -3,7 +3,6 @@ package com.github.saadkaleem.obd.reader.activity;
 import android.content.Intent;
 //import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.EditText;
@@ -12,10 +11,8 @@ import android.widget.Toast;
 
 import com.github.pires.obd.reader.R;
 import com.github.saadkaleem.obd.reader.models.DefaultResponse;
-import com.github.saadkaleem.obd.reader.net.RetrofitClient;
+import com.github.saadkaleem.obd.reader.net.AuthClient;
 import com.github.saadkaleem.obd.reader.storage.SharedPrefManager;
-
-import java.io.IOException;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -102,7 +99,7 @@ public class SignUpActivity extends RoboActivity implements View.OnClickListener
             return;
         }
 
-        Call<DefaultResponse> call = RetrofitClient
+        Call<DefaultResponse> call = AuthClient
                 .getInstance()
                 .getApi()
                 .createUser(email, password, name, "phone",code);

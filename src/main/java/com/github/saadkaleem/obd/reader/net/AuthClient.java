@@ -1,7 +1,5 @@
 package com.github.saadkaleem.obd.reader.net;
 
-import android.util.Base64;
-
 import java.io.IOException;
 
 import okhttp3.Interceptor;
@@ -11,16 +9,16 @@ import okhttp3.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class RetrofitClient {
+public class AuthClient {
 
 //    private static final String AUTH = "Basic " + Base64.encodeToString(("belalkhan:123456").getBytes(), Base64.NO_WRAP);
 
     private static final String BASE_URL = "http://192.168.100.176:6969";
-    private static RetrofitClient mInstance;
+    private static AuthClient mInstance;
     private Retrofit retrofit;
 
 
-    private RetrofitClient() {
+    private AuthClient() {
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 .addInterceptor(
                         new Interceptor() {
@@ -45,9 +43,9 @@ public class RetrofitClient {
                 .build();
     }
 
-    public static synchronized RetrofitClient getInstance() {
+    public static synchronized AuthClient getInstance() {
         if (mInstance == null) {
-            mInstance = new RetrofitClient();
+            mInstance = new AuthClient();
         }
         return mInstance;
     }
