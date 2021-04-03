@@ -4,27 +4,18 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
-import android.media.AudioManager;
-import android.media.ToneGenerator;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
 import android.os.PowerManager;
 import android.util.Log;
 import android.view.Gravity;
@@ -41,22 +32,19 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.github.pires.obd.commands.ObdCommand;
 import com.github.pires.obd.commands.SpeedCommand;
 import com.github.pires.obd.commands.engine.RPMCommand;
 import com.github.pires.obd.commands.engine.RuntimeCommand;
 import com.github.pires.obd.enums.AvailableCommandNames;
 import com.github.pires.obd.reader.R;
-import com.github.saadkaleem.obd.reader.cam.ExampleRtspActivity;
-import com.github.saadkaleem.obd.reader.config.ObdConfig;
-import com.github.saadkaleem.obd.reader.io.AbstractGatewayService;
 import com.github.saadkaleem.obd.reader.io.LogCSVWriter;
-import com.github.saadkaleem.obd.reader.io.MockObdGatewayService;
 import com.github.saadkaleem.obd.reader.io.ObdCommandJob;
-import com.github.saadkaleem.obd.reader.io.ObdGatewayService;
 import com.github.saadkaleem.obd.reader.io.ObdProgressListener;
+import com.github.saadkaleem.obd.reader.listeners.AccelerationListener;
+import com.github.saadkaleem.obd.reader.listeners.GyroscopeListener;
+import com.github.saadkaleem.obd.reader.listeners.OrientationListener;
+import com.github.saadkaleem.obd.reader.listeners.SensorListener;
 import com.github.saadkaleem.obd.reader.net.ObdReading;
-import com.github.saadkaleem.obd.reader.net.ObdService;
 import com.github.saadkaleem.obd.reader.net.UploadReadings;
 import com.github.saadkaleem.obd.reader.service.BluetoothServiceConnection;
 import com.github.saadkaleem.obd.reader.storage.SharedPrefManager;
@@ -64,13 +52,6 @@ import com.github.saadkaleem.obd.reader.trips.TripLog;
 import com.github.saadkaleem.obd.reader.trips.TripRecord;
 import com.google.inject.Inject;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -79,19 +60,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
-import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Retrofit;
-import retrofit2.Response;
-import retrofit2.converter.gson.GsonConverterFactory;
 import roboguice.RoboGuice;
 import roboguice.activity.RoboActivity;
 import roboguice.inject.ContentView;
 import roboguice.inject.InjectView;
 
-import com.github.saadkaleem.obd.reader.listeners.*;
+//import com.github.saadkaleem.obd.reader.cam.ExampleRtspActivity;
 
 @ContentView(R.layout.main)
 public class MainActivity extends RoboActivity implements ObdProgressListener, LocationListener, GpsStatus.Listener {
@@ -431,7 +405,6 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
     public boolean onCreateOptionsMenu(Menu menu) {
 //        menu.add(0, START_LIVE_DATA, 0, getString(R.string.menu_start_live_data));
 //        menu.add(0, STOP_LIVE_DATA, 0, getString(R.string.menu_stop_live_data));
-        menu.add(0, START_CAM, 0, getString(R.string.menu_start_cam));
         menu.add(0, GET_DTC, 0, getString(R.string.menu_get_dtc));
         menu.add(0, TRIPS_LIST, 0, getString(R.string.menu_trip_list));
         menu.add(0, SETTINGS, 0, getString(R.string.menu_settings));
@@ -449,9 +422,6 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
 //                stopped=true;
 //                stopLiveData();
 //                return true;
-            case START_CAM:
-                startCam();
-                return true;
             case SETTINGS:
                 updateConfig();
                 return true;
@@ -477,13 +447,6 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
         startActivity(new Intent(this, TroubleCodesActivity.class));
     }
 
-    private void startCam() {
-        Log.d(TAG, "Starting camera...");
-        tl.removeAllViews();
-//        b.putString("Test", new String("Testing Bundle"));
-        startActivity(new Intent(this, ExampleRtspActivity.class));
-
-    }
 
     private void startLiveData() {
         Log.d(TAG, "Starting live data..");

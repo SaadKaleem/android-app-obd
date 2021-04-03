@@ -3,8 +3,6 @@ package com.github.saadkaleem.obd.reader.storage;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.github.saadkaleem.obd.reader.models.User;
-
 public class SharedPrefManager {
 
     private static final String SHARED_PREF_NAME = "my_shared_pref";

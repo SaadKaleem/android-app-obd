@@ -1,5 +1,5 @@
 
-package com.github.saadkaleem.obd.reader.models;
+package com.github.saadkaleem.obd.reader.io;
 
 //import javax.annotation.Generated;
 import com.google.gson.annotations.Expose;

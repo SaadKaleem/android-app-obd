@@ -10,7 +10,7 @@ import android.widget.Toast;
 
 
 import com.github.pires.obd.reader.R;
-import com.github.saadkaleem.obd.reader.models.DefaultResponse;
+import com.github.saadkaleem.obd.reader.io.DefaultResponse;
 import com.github.saadkaleem.obd.reader.net.AuthClient;
 import com.github.saadkaleem.obd.reader.storage.SharedPrefManager;
 

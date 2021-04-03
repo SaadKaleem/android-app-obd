@@ -1,4 +1,4 @@
-package com.github.saadkaleem.obd.reader.models;
+package com.github.saadkaleem.obd.reader.io;
 
 import com.google.gson.annotations.SerializedName;
 
