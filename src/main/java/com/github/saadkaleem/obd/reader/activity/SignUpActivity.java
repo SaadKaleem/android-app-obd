@@ -115,6 +115,7 @@ public class SignUpActivity extends RoboActivity implements View.OnClickListener
 
                     DefaultResponse dr = response.body();
                     Toast.makeText(SignUpActivity.this, dr.getMsg(), Toast.LENGTH_LONG).show();
+                    startActivity(new Intent(SignUpActivity.this, LoginActivity.class));
 
                 } else if (response.code() == 422) {
                     Toast.makeText(SignUpActivity.this, "Incorrect manager code", Toast.LENGTH_LONG).show();

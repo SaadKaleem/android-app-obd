@@ -64,6 +64,23 @@
             android:hint="manager code"
             android:inputType="text" />
 
+        <Button
+            android:id="@+id/buttonSignUp"
+            android:layout_width="180dp"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="false"
+            android:layout_gravity="center"
+            android:layout_marginStart="112dp"
+            android:layout_marginLeft="112dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginEnd="119dp"
+            android:layout_marginRight="119dp"
+            android:layout_marginBottom="66dp"
+            android:background="@color/colorPrimaryDark"
+            android:text="Sign Up"
+            android:textAllCaps="false"
+            android:textColor="@color/colorFormBackground" />
+
     </LinearLayout>
 
     <TextView
@@ -73,23 +90,11 @@
         android:layout_below="@id/linearLayout"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="15dp"
+        android:gravity="center_horizontal"
         android:lineSpacingExtra="7dp"
         android:text="Already have an Account?\nClick to Login"
         android:textAlignment="center"
         android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-        android:textColor="@color/colorFormBackground"
-        android:gravity="center_horizontal" />
-
-    <Button
-        android:id="@+id/buttonSignUp"
-        android:layout_width="180dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="15dp"
-        android:background="@color/colorPrimaryDark"
-        android:text="Sign Up"
-        android:textAllCaps="false"
-        android:textColor="@color/colorFormBackground" />
+        android:textColor="@color/primary" />
 
 </RelativeLayout>

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">Android OBD-II Reader</string>
+    <string name="app_name" translatable="false">Fleety Android</string>
     <string name="action_settings">设置</string>
     <string name="action_clear_codes">清理代码</string>
-    <string name="notification_action">点击打开 Android OBD-II Reader</string>
+    <string name="notification_action">点击打开 Fleety Android</string>
     <string name="command_list">选择一条指令</string>
     <string name="service_starting">正在开启 OBD 连接..</string>
     <string name="service_started">OBD 连接已经开启.</string>
